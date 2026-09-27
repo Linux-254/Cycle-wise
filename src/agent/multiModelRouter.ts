@@ -178,8 +178,9 @@ export class MultiModelRouter {
             latency_ms: Math.round(performance.now() - startTime),
           };
         } catch (err: any) {
-          cascadeTrail.push(`${targetModel} (NVIDIA NIM) -> Failed: ${err.message || 'Error'}`);
-          console.warn('[MultiModelRouter] NVIDIA Nemotron failed, failing over to Gemini failsafe cascade:', err.message);
+          const errReason = err?.message?.includes('429') ? 'Rate limit (429 Exceeded)' : (err.message || 'Error');
+          cascadeTrail.push(`${targetModel} (NVIDIA NIM) -> ${errReason}`);
+          console.log(`[MultiModelRouter] NVIDIA ${targetModel} notice (${errReason}), failing over to Gemini failsafe cascade`);
         }
       }
 
@@ -218,8 +219,10 @@ export class MultiModelRouter {
               latency_ms: Math.round(performance.now() - startTime),
             };
           } catch (err: any) {
-            cascadeTrail.push(`${geminiModel} (Google GenAI) -> Failed: ${err.message || 'Error'}`);
-            console.warn(`[MultiModelRouter] Gemini ${geminiModel} failed, trying next Gemini failsafe model:`, err.message);
+            const isQuota = err?.message?.includes('429') || err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429;
+            const errSummary = isQuota ? 'Rate limit / Quota exceeded (429)' : (err.message || 'Error');
+            cascadeTrail.push(`${geminiModel} (Google GenAI) -> ${errSummary}`);
+            console.log(`[MultiModelRouter] Gemini ${geminiModel} notice (${errSummary}), trying next failsafe model...`);
           }
         }
       }
@@ -241,7 +244,9 @@ export class MultiModelRouter {
             latency_ms: Math.round(performance.now() - startTime),
           };
         } catch (err: any) {
-          cascadeTrail.push(`${geminiModel} (Google GenAI Failsafe) -> Failed: ${err.message || 'Error'}`);
+          const isQuota = err?.message?.includes('429') || err?.message?.includes('RESOURCE_EXHAUSTED') || err?.status === 429;
+          const errSummary = isQuota ? 'Rate limit (429)' : (err.message || 'Error');
+          cascadeTrail.push(`${geminiModel} (Google GenAI Failsafe) -> ${errSummary}`);
         }
       }
     }

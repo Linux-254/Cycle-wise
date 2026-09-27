@@ -1,6 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExchangeCycle, SMEProfile } from '../agent/types';
-import { Bot, Sparkles, Send, X, ShieldCheck, AlertCircle, ArrowRight, CornerDownLeft, RefreshCw, MessageSquare } from 'lucide-react';
+import {
+  Bot,
+  Sparkles,
+  Send,
+  X,
+  ShieldCheck,
+  AlertCircle,
+  ArrowRight,
+  CornerDownLeft,
+  RefreshCw,
+  MessageSquare,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
+  CheckCircle2,
+  HelpCircle
+} from 'lucide-react';
+import { VoiceAssistant } from '../utils/voiceAssistant';
 
 interface AgentInquiryModalProps {
   isOpen: boolean;
@@ -20,6 +38,9 @@ export const AgentInquiryModal: React.FC<AgentInquiryModalProps> = ({
   const [question, setQuestion] = useState('');
   const [modelPreference, setModelPreference] = useState<string>('auto');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
+
   const [messages, setMessages] = useState<Array<{
     sender: 'user' | 'agent';
     text: string;
@@ -31,16 +52,23 @@ export const AgentInquiryModal: React.FC<AgentInquiryModalProps> = ({
     {
       sender: 'agent',
       text: cycle
-        ? `Jambo! I am Cyclewise AI Coordinator with NVIDIA Nemotron & Gemini multi-model routing. I have verified facts for this ${cycle.cycle_length}-business rescue loop (KES ${cycle.estimated_value_unlocked.toLocaleString()} unlocked). You can ask me how delivery works, how parity is calculated, how participants are protected, or ask questions in English, Kiswahili, or Sheng.`
-        : 'Jambo! I am Cyclewise AI Coordinator with NVIDIA Nemotron & Gemini routing. Ask me any question about the SME exchange network, trust verification, or how reciprocal barter loops prevent debt.',
+        ? `Jambo! I am the Cyclewise Smart Assistant. I have verified facts for this ${cycle.cycle_length}-shop barter loop (KES ${cycle.estimated_value_unlocked.toLocaleString()} unlocked with 0 debt). Ask me anything in Swahili, Sheng, or English—you can also tap the mic to speak!`
+        : 'Jambo! I am the Cyclewise Smart Assistant. Ask me any question about how Nairobi shops trade surplus supplies, how delivery works, or why this prevents debt.',
       citations: ['Cyclewise Verified Graph Engine', 'National Registry Verification'],
     },
   ]);
 
+  useEffect(() => {
+    return () => {
+      VoiceAssistant.stopListening();
+      VoiceAssistant.stopSpeaking();
+    };
+  }, []);
+
   if (!isOpen) return null;
 
   const quickQuestions = [
-    { label: 'Why no debt?', q: 'How does this cycle protect SMEs from emergency cash loans or bad debt?' },
+    { label: 'Why no debt?', q: 'How does this trade protect SMEs from emergency cash loans or bad debt?' },
     { label: 'Amina details', q: 'What does Amina Foods give and receive in this exchange cycle?' },
     { label: 'Kiswahili summary', q: 'Eleza kwa Kiswahili jinsi biashara hizi 4 zinavyosaidiana bila mkopo.' },
     { label: 'Late delivery risk', q: 'What happens if a participant like GreenPack or SwiftMove delivers late?' },
@@ -87,8 +115,8 @@ export const AgentInquiryModal: React.FC<AgentInquiryModalProps> = ({
         ...prev,
         {
           sender: 'agent',
-          text: `Samahani, network error occurred: ${msg}. Please retry.`,
-          risk: 'Transient connection error',
+          text: `Samahani, network notice: ${msg}. Please retry.`,
+          risk: 'Transient connection notice',
         },
       ]);
     } finally {
@@ -96,88 +124,127 @@ export const AgentInquiryModal: React.FC<AgentInquiryModalProps> = ({
     }
   };
 
+  const toggleVoiceRecording = () => {
+    if (isRecording) {
+      VoiceAssistant.stopListening();
+      setIsRecording(false);
+    } else {
+      setIsRecording(true);
+      VoiceAssistant.startListening(
+        (transcript, isFinal) => {
+          setQuestion(transcript);
+          if (isFinal) {
+            setIsRecording(false);
+            handleAsk(transcript);
+          }
+        },
+        () => {
+          setIsRecording(false);
+        },
+        'sw-KE'
+      );
+    }
+  };
+
+  const toggleSpeakMessage = (text: string, index: number) => {
+    if (speakingIndex === index) {
+      VoiceAssistant.stopSpeaking();
+      setSpeakingIndex(null);
+    } else {
+      setSpeakingIndex(index);
+      VoiceAssistant.speak(text, () => {
+        setSpeakingIndex(null);
+      });
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
-      <div className="bg-[#FAF9F5] border border-[#E3E0D7] rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-[#FAF9F5] border border-[#E3E0D7] rounded-2xl w-full max-w-3xl shadow-2xl flex flex-col h-[85vh] max-h-[700px] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         
         {/* Header */}
-        <div className="p-4 sm:p-5 bg-[#18243A] text-white flex items-center justify-between border-b border-[#253654]">
+        <div className="p-4 bg-[#121B2B] text-white flex items-center justify-between border-b border-[#202E44]">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-[#233554] border border-[#E7B84B]/30 flex items-center justify-center text-[#E7B84B]">
-              <Bot className="w-5 h-5 text-[#E7B84B]" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E7B84B] to-[#C9972E] p-0.5 shadow-xs flex items-center justify-center text-[#121B2B] shrink-0">
+              <MessageSquare className="w-5 h-5 text-[#121B2B]" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="font-bold text-sm text-white">Cyclewise AI Coordinator</h3>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#2E8B68]/30 text-[#86E4B9] font-medium border border-[#2E8B68]/40">
-                  Gemini Grounded Agent
+                <h3 className="font-bold text-base text-white">Ask Cyclewise Trade Assistant</h3>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#2E8B68] text-white font-bold">
+                  Voice & Q&A
                 </span>
               </div>
-              <p className="text-xs text-[#A6B2C3]">
-                Strict Grounding &bull; Multilingual EN / SW / Sheng &bull; Zero Fake Data
+              <p className="text-xs text-[#8E9CAE]">
+                Speaks English, Swahili & Sheng &bull; Fact-checked answers on trade loops and escrow
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#A6B2C3] hover:text-white hover:bg-[#253752] transition-colors"
-            aria-label="Close Agent modal"
+            className="p-1.5 rounded-lg text-[#8E9CAE] hover:text-white hover:bg-[#1E2D44] transition-colors"
+            aria-label="Close dialogue"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Cycle context bar if cycle is present */}
-        {cycle && (
-          <div className="bg-[#EFECE4] px-4 py-2 border-b border-[#E3E0D7] flex flex-wrap items-center justify-between text-xs gap-1">
-            <div className="flex items-center gap-1.5 text-[#18243A]">
-              <span className="font-bold">Active Context:</span>
-              <span>{cycle.cycle_length}-SME Loop (KES {cycle.estimated_value_unlocked.toLocaleString()})</span>
-            </div>
-            <div className="text-[11px] text-[#68727D]">
-              Participants: {cycle.sme_sequence.map((id) => smes.get(id)?.name || id).join(' → ')}
-            </div>
-          </div>
-        )}
-
-        {/* Conversation transcript */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 text-xs">
+        {/* Message Thread */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3.5">
           {messages.map((m, idx) => (
             <div
               key={idx}
               className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
             >
               <div
-                className={`max-w-[85%] rounded-2xl p-3 sm:p-3.5 space-y-1.5 ${
+                className={`p-3.5 rounded-2xl max-w-[85%] text-xs sm:text-sm leading-relaxed shadow-2xs ${
                   m.sender === 'user'
-                    ? 'bg-[#18243A] text-white rounded-br-xs'
-                    : 'bg-white border border-[#E3E0D7] text-[#17202A] rounded-bl-xs shadow-xs'
+                    ? 'bg-[#121B2B] text-white rounded-br-xs'
+                    : 'bg-white border border-[#E3E0D7] text-[#17202A] rounded-bl-xs'
                 }`}
               >
-                <div className="flex items-center justify-between gap-3 text-[10px] pb-1 border-b border-black/5">
-                  <span className={`font-semibold ${m.sender === 'user' ? 'text-[#E7B84B]' : 'text-[#68727D]'}`}>
-                    {m.sender === 'user' ? 'You (SME Owner)' : 'Cyclewise Agent (Gemini)'}
-                  </span>
-                  {m.durationMs !== undefined && (
-                    <span className="text-[#68727D] font-mono text-[9px]">
-                      {m.model} &bull; {m.durationMs}ms
-                    </span>
-                  )}
-                </div>
+                {/* Agent Header with Voice Playback */}
+                {m.sender === 'agent' && (
+                  <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-[#EFECE4] text-[11px]">
+                    <div className="flex items-center space-x-1.5 text-[#2E8B68] font-bold">
+                      <Bot className="w-3.5 h-3.5" />
+                      <span>Cyclewise Assistant</span>
+                    </div>
 
-                <p className="leading-relaxed whitespace-pre-wrap">{m.text}</p>
-
-                {m.risk && (
-                  <div className="pt-1.5 mt-1 border-t border-[#EFECE4] flex items-start space-x-1.5 text-[11px] text-[#D8783D]">
-                    <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-[#2E8B68]" />
-                    <span>Risk Check: {m.risk}</span>
+                    <button
+                      onClick={() => toggleSpeakMessage(m.text, idx)}
+                      className="flex items-center space-x-1 text-[10px] font-semibold text-[#18243A] hover:text-[#2E8B68] bg-[#FAF9F5] px-2 py-0.5 rounded-md border border-[#E3E0D7]"
+                      title="Listen aloud in voice"
+                    >
+                      {speakingIndex === idx ? (
+                        <>
+                          <VolumeX className="w-3 h-3 text-[#DC2626]" />
+                          <span className="text-[#DC2626]">Stop</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-3 h-3 text-[#2E8B68]" />
+                          <span>Listen (Sauti)</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 )}
 
-                {m.citations && m.citations.length > 0 && (
-                  <div className="text-[10px] text-[#68727D] pt-1">
-                    Citations: {m.citations.join(' &bull; ')}
+                <p className="whitespace-pre-wrap">{m.text}</p>
+
+                {/* Agent Citations & Telemetry */}
+                {m.sender === 'agent' && m.citations && m.citations.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-[#EFECE4] text-[10px] text-[#68727D] space-y-1">
+                    <div className="flex flex-wrap items-center gap-1 font-semibold">
+                      <span className="text-[#2E8B68]">Verified Sources:</span>
+                      {m.citations.map((c, i) => (
+                        <span key={i} className="bg-[#FAF9F5] px-1.5 py-0.5 rounded-sm border border-[#E3E0D7]">
+                          {c}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -185,48 +252,54 @@ export const AgentInquiryModal: React.FC<AgentInquiryModalProps> = ({
           ))}
 
           {isLoading && (
-            <div className="flex items-center space-x-2 text-xs text-[#68727D] py-2">
+            <div className="flex items-center space-x-2 text-xs text-[#68727D] p-3 bg-white rounded-xl border border-[#E3E0D7] w-fit">
               <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#2E8B68]" />
-              <span>Cyclewise Agent is analyzing exchange graph facts with Gemini...</span>
+              <span>Grounded Assistant is answering...</span>
             </div>
           )}
         </div>
 
-        {/* Quick query & Model Selector chips */}
-        <div className="p-2 sm:px-4 bg-[#F2EFE8] border-t border-[#E3E0D7] flex flex-wrap items-center justify-between gap-1.5 text-[11px]">
-          <div className="flex items-center gap-1.5 overflow-x-auto">
-            <span className="text-[#68727D] shrink-0 font-medium text-[10px] uppercase">Ask:</span>
+        {/* Quick Question Chips */}
+        <div className="p-3 bg-[#EFECE4] border-t border-[#E3E0D7] space-y-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+            <span className="text-[11px] font-bold text-[#68727D] mr-1 shrink-0">Quick Ask:</span>
             {quickQuestions.map((q, idx) => (
               <button
                 key={idx}
                 onClick={() => handleAsk(q.q)}
-                disabled={isLoading}
-                className="shrink-0 px-2.5 py-1 rounded-full bg-white hover:bg-[#E3E0D7] text-[#18243A] border border-[#D5D1C4] transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-white hover:bg-[#FAF9F5] text-[#18243A] border border-[#D5D1C4] text-[11px] font-medium whitespace-nowrap shadow-2xs transition-colors"
               >
                 {q.label}
               </button>
             ))}
           </div>
 
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] text-[#68727D]">Model:</span>
-            <select
-              value={modelPreference}
-              onChange={(e) => setModelPreference(e.target.value)}
-              className="px-2 py-0.5 rounded-md border border-[#D5D1C4] bg-white text-[10px] font-semibold text-[#18243A]"
-            >
-              <option value="auto">Auto Cascade (NVIDIA Nemotron ➔ Gemini Flash ➔ Gemini Failsafe)</option>
-              <option value="nvidia-nemotron">NVIDIA Nemotron 3 Ultra</option>
-              <option value="nvidia-nemotron-70b">NVIDIA Nemotron 70B</option>
-              <option value="google-gemini-flash">Google Gemini 3.8 Flash</option>
-              <option value="google-gemini-lite">Google Gemini 3.1 Flash Lite (Failsafe)</option>
-              <option value="google-gemini-pro">Google Gemini 3.1 Pro (Failsafe)</option>
-            </select>
+          <div className="flex items-center justify-between text-[11px] text-[#68727D]">
+            <span>Model Engine: <strong>NVIDIA Nemotron ➔ Google Gemini Failsafe</strong></span>
+            {isRecording && (
+              <span className="text-[#DC2626] font-bold flex items-center gap-1 animate-pulse">
+                <span className="w-2 h-2 rounded-full bg-[#DC2626]"></span>
+                Listening... speak your question
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Input box */}
+        {/* Input Box with Voice Mic */}
         <div className="p-3 sm:p-4 bg-white border-t border-[#E3E0D7] flex items-center space-x-2">
+          <button
+            onClick={toggleVoiceRecording}
+            className={`p-2.5 rounded-xl transition-all ${
+              isRecording
+                ? 'bg-[#DC2626] text-white ring-4 ring-[#DC2626]/20 animate-pulse'
+                : 'bg-[#FAF9F5] hover:bg-[#EFECE4] text-[#18243A] border border-[#E3E0D7]'
+            }`}
+            title="Speak your question using microphone"
+            aria-label="Voice input"
+          >
+            {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-[#2E8B68]" />}
+          </button>
+
           <input
             type="text"
             value={question}
@@ -234,17 +307,17 @@ export const AgentInquiryModal: React.FC<AgentInquiryModalProps> = ({
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleAsk();
             }}
-            placeholder="Uliza chochote kuhusu mzunguko huu (Ask in English, Swahili or Sheng)..."
-            className="flex-1 p-2.5 rounded-xl border border-[#E3E0D7] text-xs sm:text-sm text-[#17202A] focus:ring-2 focus:ring-[#18243A] focus:border-transparent outline-hidden bg-[#FAF9F5]"
-            disabled={isLoading}
+            placeholder="Type or speak a question in Swahili or English..."
+            className="flex-1 p-2.5 rounded-xl border border-[#E3E0D7] text-xs sm:text-sm text-[#17202A] outline-hidden focus:ring-2 focus:ring-[#121B2B] bg-white"
           />
+
           <button
             onClick={() => handleAsk()}
-            disabled={isLoading || !question.trim()}
-            className="px-4 py-2.5 rounded-xl bg-[#18243A] hover:bg-[#253752] text-[#E7B84B] font-semibold text-xs flex items-center space-x-1.5 transition-colors disabled:opacity-50"
+            disabled={!question.trim() || isLoading}
+            className="p-2.5 rounded-xl bg-[#121B2B] hover:bg-[#202E44] text-[#E7B84B] transition-all disabled:opacity-40 shadow-xs"
+            aria-label="Send question"
           >
-            <Send className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Ask Agent</span>
+            <Send className="w-4 h-4" />
           </button>
         </div>
       </div>
