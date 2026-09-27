@@ -90,7 +90,7 @@ export const BarterCartModal: React.FC<BarterCartModalProps> = ({
               <ShoppingBag className="w-10 h-10 text-[#8E9CAE] mx-auto opacity-50" />
               <p className="font-bold text-sm text-[#18243A]">Your Barter Cart is Empty</p>
               <p className="text-xs text-[#68727D] max-w-sm mx-auto">
-                Explore the Nairobi Shop Directory or Smart Matcher and tap "Add to Barter Cart" to build a multi-item trade.
+                Explore the network or create a trade request, then add businesses here while you compare a multi-item exchange.
               </p>
             </div>
           ) : (

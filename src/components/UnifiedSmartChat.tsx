@@ -34,6 +34,7 @@ interface UnifiedSmartChatProps {
   onCommitCycle: (cycleId: string) => void;
   onOpenGuide: () => void;
   onOpenOnboarding: () => void;
+  onMatchFound: (cycles: ExchangeCycle[]) => void;
 }
 
 export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
@@ -42,6 +43,7 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
   onCommitCycle,
   onOpenGuide,
   onOpenOnboarding,
+  onMatchFound,
 }) => {
   // Simple Onboarding State
   const [businessName, setBusinessName] = useState('Amina Wholesale Foods');
@@ -139,6 +141,7 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
       if (result.cycles && result.cycles.length > 0) {
         setActiveCycles(result.cycles);
         setSelectedCycle(result.cycles[0]);
+        onMatchFound(result.cycles);
 
         // Speak immediate AI vocal response!
         const spokenResponse = `Habari ${businessName}! Mfumo umepata mzunguko wa biashara wa maduka ${result.cycles[0].cycle_length} jijini Nairobi. Thamani ni Shilingi ${result.cycles[0].estimated_value_unlocked.toLocaleString()} bila mkopo.`;

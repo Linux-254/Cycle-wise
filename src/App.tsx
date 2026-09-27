@@ -10,7 +10,8 @@ import { MobileBottomNav } from './components/MobileBottomNav';
 import { BarterCartModal, CartItem } from './components/BarterCartModal';
 import { AgentCommandCenterModal } from './components/AgentCommandCenterModal';
 import { AgentInquiryModal } from './components/AgentInquiryModal';
-import { HeroLandingBanner } from './components/HeroLandingBanner';
+import { WorkspaceOverview } from './components/WorkspaceOverview';
+import { CycleCard } from './components/CycleCard';
 import { CyclewiseLogo } from './components/CyclewiseLogo';
 import { DeterministicGraphEngine } from './engine/graphEngine';
 import { SEEDED_SMES } from './engine/fixtures';
@@ -25,13 +26,14 @@ import {
   ArrowRight,
   ShieldCheck,
   Bot,
+  GitMerge,
   Store,
   ShoppingBag,
   Plus
 } from 'lucide-react';
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<'chat' | 'directory' | 'evidence'>('chat');
+  const [currentTab, setCurrentTab] = useState<'overview' | 'request' | 'network' | 'review' | 'evidence'>('overview');
   const [showRubricModal, setShowRubricModal] = useState(false);
   const [showJudgeGuideModal, setShowJudgeGuideModal] = useState(false);
   const [showAiFeaturesModal, setShowAiFeaturesModal] = useState(false);
@@ -110,7 +112,7 @@ export default function App() {
     if (newCycles.length > 0) {
       setCycles(newCycles);
     }
-    setCurrentTab('chat');
+    setCurrentTab('request');
   };
 
   const handleAddSmeToCart = (sme: SMEProfile) => {
@@ -135,18 +137,20 @@ export default function App() {
   };
 
   const handleCheckoutCart = () => {
-    setCurrentTab('chat');
+    setCurrentTab('request');
   };
 
   return (
     <div className="cw-shell min-h-screen text-[#17201b] flex flex-col md:flex-row antialiased font-sans">
       {/* Desktop Sidebar */}
       <Sidebar
-        currentTab={currentTab === 'chat' ? 'request' : currentTab === 'directory' ? 'network' : 'profile'}
+        currentTab={currentTab === 'overview' ? 'overview' : currentTab === 'request' ? 'request' : currentTab === 'network' ? 'network' : currentTab === 'review' ? 'review' : 'profile'}
         onSelectTab={(tab) => {
-          if (tab === 'network') setCurrentTab('directory');
+          if (tab === 'overview') setCurrentTab('overview');
+          else if (tab === 'request') setCurrentTab('request');
+          else if (tab === 'network') setCurrentTab('network');
+          else if (tab === 'review') setCurrentTab('review');
           else if (tab === 'profile') setCurrentTab('evidence');
-          else setCurrentTab('chat');
         }}
         onResetDemo={handleResetDemo}
         onOpenGuide={() => setShowJudgeGuideModal(true)}
@@ -223,9 +227,11 @@ export default function App() {
         <div className="cw-tabbar hidden md:block bg-white/90 backdrop-blur-md border-b border-[#E2DDD3] px-4 py-2.5 sticky top-[57px] z-20 shadow-xs">
           <div className="max-w-4xl mx-auto flex items-center space-x-2 text-xs font-semibold">
             {[
-              { id: 'chat', label: 'Smart Assistant & Swap Matcher' },
-              { id: 'directory', label: 'Nairobi Shop Directory' },
-              { id: 'evidence', label: 'Verified Shop Records' },
+              { id: 'overview', label: 'Overview' },
+              { id: 'request', label: 'Create request' },
+              { id: 'network', label: 'Explore network' },
+              { id: 'review', label: 'Review match' },
+              { id: 'evidence', label: 'Evidence ledger' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -244,26 +250,34 @@ export default function App() {
 
         {/* Main Content Area */}
         <main className="cw-content max-w-5xl w-full mx-auto px-4 pt-5 sm:px-6 sm:pt-8 flex-1 pb-20 md:pb-8 space-y-8">
-          {/* Beautiful Hero Landing Banner */}
-          <HeroLandingBanner
-            onStartMatching={() => setCurrentTab('chat')}
-            onOpenOnboarding={() => setShowOnboardingModal(true)}
-            onOpenGuide={() => setShowJudgeGuideModal(true)}
-          />
+          {currentTab === 'overview' && (
+            <WorkspaceOverview
+              smes={smes}
+              activeCycle={activeCycle}
+              onStartRequest={() => setCurrentTab('request')}
+              onReviewMatch={() => setCurrentTab('review')}
+              onOpenAiStudio={() => setShowAgentCommand(true)}
+              onOpenOnboarding={() => setShowOnboardingModal(true)}
+            />
+          )}
 
-          {/* TAB 1: Unified Smart Assistant & Swap Matcher (All-In-One Flow) */}
-          {currentTab === 'chat' && (
+          {/* STEP 1: Create request */}
+          {currentTab === 'request' && (
             <UnifiedSmartChat
               smesMap={smesMap}
               initialCycles={cycles}
               onCommitCycle={handleCommitCycle}
               onOpenGuide={() => setShowJudgeGuideModal(true)}
               onOpenOnboarding={() => setShowOnboardingModal(true)}
+              onMatchFound={(foundCycles) => {
+                setCycles(foundCycles);
+                setCurrentTab('review');
+              }}
             />
           )}
 
-          {/* TAB 2: Clean Nairobi Shop Directory */}
-          {currentTab === 'directory' && (
+          {/* STEP 2: Explore network */}
+          {currentTab === 'network' && (
             <div className="bg-white rounded-2xl border border-[#E2DDD3] p-5 sm:p-6 shadow-xs space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#F0ECE1]">
                 <div>
@@ -338,7 +352,7 @@ export default function App() {
                       </button>
 
                       <button
-                        onClick={() => setCurrentTab('chat')}
+                        onClick={() => setCurrentTab('request')}
                         className="text-[11px] font-extrabold text-[#0B132B] hover:text-[#F59E0B] flex items-center gap-1 transition-colors"
                       >
                         <span>Trade Now</span>
@@ -351,7 +365,16 @@ export default function App() {
             </div>
           )}
 
-          {/* TAB 3: Verified Shop Records */}
+          {/* STEP 3: Review the selected loop */}
+          {currentTab === 'review' && (
+            <div className="space-y-5">
+              <div className="rounded-[24px] border border-[#d6d0c2] bg-[#eee9dc] p-5 sm:p-7"><div className="cw-eyebrow text-[#69756c]">Step 3 · Review before approval</div><div className="mt-3 flex flex-wrap items-end justify-between gap-4"><div><h2 className="font-display text-4xl text-[#17201b]">Does this loop work for you?</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#69756c]">Read the obligations from left to right, inspect participant evidence, then decide whether to open the demo authorization flow.</p></div><button onClick={() => setCurrentTab('request')} className="rounded-[14px] border border-[#cfc6b4] bg-white px-4 py-2.5 text-xs font-extrabold text-[#17201b]">Edit request</button></div></div>
+              {activeCycle ? <CycleCard cycle={activeCycle} smes={smesMap} onCommit={handleCommitCycle} onAskAgent={() => setShowAgentInquiry(true)} onRequestSubstitute={() => setShowAgentCommand(true)} /> : <div className="cw-surface p-8 text-center"><GitMerge className="mx-auto h-8 w-8 text-[#a87928]" /><h3 className="mt-3 text-sm font-extrabold">No match is ready yet</h3><p className="mt-2 text-xs text-[#69756c]">Create a request to generate a comparable exchange loop.</p><button onClick={() => setCurrentTab('request')} className="mt-5 rounded-[14px] bg-[#0d1511] px-4 py-2.5 text-xs font-extrabold text-[#d8a84e]">Create request</button></div>}
+              <EvidencePanel smes={activeCycle ? activeCycle.sme_sequence.map((id) => smesMap.get(id)).filter((sme): sme is SMEProfile => Boolean(sme)) : smes.slice(0, 4)} />
+            </div>
+          )}
+
+          {/* STEP 4: Evidence ledger */}
           {currentTab === 'evidence' && (
             <div className="max-w-4xl mx-auto">
               <EvidencePanel smes={smes} />
@@ -378,9 +401,9 @@ export default function App() {
       <JudgeFlowGuideModal
         isOpen={showJudgeGuideModal}
         onClose={() => setShowJudgeGuideModal(false)}
-        onJumpToTab={() => setCurrentTab('chat')}
+        onJumpToTab={() => setCurrentTab('request')}
         onOpenOnboarding={() => setShowOnboardingModal(true)}
-        onOpenAgentCommand={() => setCurrentTab('chat')}
+        onOpenAgentCommand={() => setCurrentTab('request')}
       />
 
       <AiFeaturesMatrixModal

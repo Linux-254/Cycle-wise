@@ -51,7 +51,9 @@
   .cw-float { animation: cw-float 7s ease-in-out infinite; }
   .cw-hairline { border-color: var(--color-border-dark); }
   .cw-glow { position: relative; isolation: isolate; }
-  .cw-glow::before { content: ""; position: absolute; inset: -25% 35% 20% -10%; z-index: -1; background: rgba(121,198,160,.20); filter: blur(60px); border-radius: 999px; pointer-events: none; }
+.cw-glow::before { content: ""; position: absolute; inset: -25% 35% 20% -10%; z-index: -1; background: rgba(121,198,160,.20); filter: blur(60px); border-radius: 999px; pointer-events: none; }
+.cw-review-card { animation: cw-reveal var(--duration-card) var(--ease-standard) both; }
+.cw-review-card button:focus-visible { outline-color: #d8a84e; }
 }
 
 *:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }

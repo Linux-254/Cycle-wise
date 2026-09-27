@@ -1,92 +1,24 @@
 import React from 'react';
-import {
-  Sparkles,
-  Store,
-  ShieldCheck,
-  PlusCircle,
-  ShoppingBag
-} from 'lucide-react';
+import { ClipboardCheck, GitMerge, LayoutDashboard, PlusCircle, ShoppingBag, Sparkles } from 'lucide-react';
+
+type JourneyTab = 'overview' | 'request' | 'network' | 'review' | 'evidence';
 
 interface MobileBottomNavProps {
-  currentTab: 'chat' | 'directory' | 'evidence';
-  onSelectTab: (tab: 'chat' | 'directory' | 'evidence') => void;
+  currentTab: JourneyTab;
+  onSelectTab: (tab: JourneyTab) => void;
   onOpenOnboarding: () => void;
   onOpenCart: () => void;
   cartCount: number;
 }
 
-export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
-  currentTab,
-  onSelectTab,
-  onOpenOnboarding,
-  onOpenCart,
-  cartCount,
-}) => {
-  return (
-    <div className="cw-mobile-nav md:hidden fixed bottom-0 left-0 right-0 bg-[#121B2B] text-white border-t border-[#202E44] z-40 px-2 py-1.5 shadow-2xl backdrop-blur-md bg-opacity-95">
-      <div className="flex items-center justify-around max-w-md mx-auto">
-        {/* Tab 1: Trade Matcher */}
-        <button
-          onClick={() => onSelectTab('chat')}
-          className={`flex flex-col items-center justify-center min-w-[60px] py-1 px-2 rounded-xl transition-all ${
-            currentTab === 'chat'
-              ? 'bg-[#E7B84B] text-[#121B2B] font-bold shadow-xs'
-              : 'text-[#A0AEC0] hover:text-white'
-          }`}
-        >
-          <Sparkles className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px] tracking-tight">Matcher</span>
-        </button>
-
-        {/* Tab 2: Directory */}
-        <button
-          onClick={() => onSelectTab('directory')}
-          className={`flex flex-col items-center justify-center min-w-[60px] py-1 px-2 rounded-xl transition-all ${
-            currentTab === 'directory'
-              ? 'bg-[#E7B84B] text-[#121B2B] font-bold shadow-xs'
-              : 'text-[#A0AEC0] hover:text-white'
-          }`}
-        >
-          <Store className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px] tracking-tight">Shops</span>
-        </button>
-
-        {/* Center Primary Action: Register Shop */}
-        <button
-          onClick={onOpenOnboarding}
-          className="flex flex-col items-center justify-center min-w-[64px] py-1 px-2 rounded-xl bg-gradient-to-r from-[#2E8B68] to-[#257356] text-white font-bold shadow-md hover:scale-105 transition-transform border border-[#85E2BD]/30"
-        >
-          <PlusCircle className="w-5 h-5 mb-0.5 text-[#85E2BD]" />
-          <span className="text-[10px] tracking-tight">Register</span>
-        </button>
-
-        {/* Cart */}
-        <button
-          onClick={onOpenCart}
-          className="relative flex flex-col items-center justify-center min-w-[60px] py-1 px-2 rounded-xl text-[#A0AEC0] hover:text-white transition-all"
-        >
-          <ShoppingBag className="w-5 h-5 mb-0.5 text-[#E7B84B]" />
-          <span className="text-[10px] tracking-tight">Cart</span>
-          {cartCount > 0 && (
-            <span className="absolute top-0 right-3 bg-[#DC2626] text-white font-bold text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
-              {cartCount}
-            </span>
-          )}
-        </button>
-
-        {/* Tab 3: Verified Records */}
-        <button
-          onClick={() => onSelectTab('evidence')}
-          className={`flex flex-col items-center justify-center min-w-[60px] py-1 px-2 rounded-xl transition-all ${
-            currentTab === 'evidence'
-              ? 'bg-[#E7B84B] text-[#121B2B] font-bold shadow-xs'
-              : 'text-[#A0AEC0] hover:text-white'
-          }`}
-        >
-          <ShieldCheck className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px] tracking-tight">Records</span>
-        </button>
-      </div>
+export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentTab, onSelectTab, onOpenOnboarding, onOpenCart, cartCount }) => (
+  <div className="cw-mobile-nav md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-[#202E44] bg-[#0d1511]/96 px-2 py-2 text-white shadow-2xl backdrop-blur-md">
+    <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
+      <button onClick={() => onSelectTab('overview')} className={`flex flex-col items-center justify-center rounded-2xl px-1 py-1.5 text-[10px] transition ${currentTab === 'overview' ? 'bg-[#d8a84e] font-extrabold text-[#0d1511]' : 'text-[#aab5ad]'}`}><LayoutDashboard className="mb-0.5 h-4 w-4" /><span>Home</span></button>
+      <button onClick={() => onSelectTab('request')} className={`flex flex-col items-center justify-center rounded-2xl px-1 py-1.5 text-[10px] transition ${currentTab === 'request' ? 'bg-[#d8a84e] font-extrabold text-[#0d1511]' : 'text-[#aab5ad]'}`}><Sparkles className="mb-0.5 h-4 w-4" /><span>Request</span></button>
+      <button onClick={onOpenOnboarding} className="flex flex-col items-center justify-center rounded-2xl bg-[#79c6a0] px-1 py-1.5 text-[10px] font-extrabold text-[#0d1511]"><PlusCircle className="mb-0.5 h-4 w-4" /><span>Add shop</span></button>
+      <button onClick={() => onSelectTab('review')} className={`flex flex-col items-center justify-center rounded-2xl px-1 py-1.5 text-[10px] transition ${currentTab === 'review' ? 'bg-[#d8a84e] font-extrabold text-[#0d1511]' : 'text-[#aab5ad]'}`}><GitMerge className="mb-0.5 h-4 w-4" /><span>Review</span></button>
+      <button onClick={onOpenCart} className="relative flex flex-col items-center justify-center rounded-2xl px-1 py-1.5 text-[10px] text-[#aab5ad] transition"><ShoppingBag className="mb-0.5 h-4 w-4 text-[#d8a84e]" /><span>Basket</span>{cartCount > 0 && <span className="absolute right-2 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-[#ef806c] text-[9px] font-black text-white">{cartCount}</span>}</button>
     </div>
-  );
-};
+  </div>
+);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, PlusCircle, GitMerge, Clock, UserCheck, RefreshCw, Store, HelpCircle, Sparkles } from 'lucide-react';
+import { Home, GitMerge, UserCheck, RefreshCw, HelpCircle, Sparkles, LayoutDashboard } from 'lucide-react';
 import { CyclewiseLogo } from './CyclewiseLogo';
 
 interface SidebarProps {
@@ -17,9 +17,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenGuide,
 }) => {
   const primaryLinks = [
-    { id: 'request', label: 'Smart Assistant & Matcher', icon: Sparkles, isPrimary: true },
-    { id: 'network', label: 'Nairobi Shop Directory', icon: Home, badge: 'Live' },
-    { id: 'profile', label: 'Verified Shop Records', icon: UserCheck },
+    { id: 'overview', label: 'Workspace overview', icon: LayoutDashboard },
+    { id: 'request', label: 'Create trade request', icon: Sparkles, isPrimary: true },
+    { id: 'network', label: 'Explore network', icon: Home, badge: 'Nodes' },
+    { id: 'review', label: 'Review match', icon: GitMerge, badge: 'Step 3' },
+    { id: 'profile', label: 'Evidence ledger', icon: UserCheck },
   ];
 
   return (
@@ -51,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="flex items-center space-x-2">
               <HelpCircle className="w-4 h-4 text-[#10B981]" />
-              <span>How It Works (Guide)</span>
+          <span>How the journey works</span>
             </div>
             <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#0B132B] text-[#9CA3AF]">5 Steps</span>
           </button>
