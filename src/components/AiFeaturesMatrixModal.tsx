@@ -38,7 +38,7 @@ export const AiFeaturesMatrixModal: React.FC<AiFeaturesMatrixModalProps> = ({
       id: 'intake',
       simpleTitle: '1. Speaks Your Language (English, Swahili, Sheng)',
       techTitle: 'Multilingual Conversational NLP & Entity Extraction',
-      models: 'NVIDIA Nemotron 3 Ultra (120B) / Google Gemini 3.8 Flash',
+      models: 'Configured provider (if available) → deterministic fallback',
       tag: 'Smart Speech Parsing',
       benefit:
         'You don’t have to type complicated catalog codes. Just say "Nahitaji mafuta cartons 20... naeza fanya bookkeeping." The AI understands market slang and automatically organizes it into clean quantities and prices.',
@@ -61,7 +61,7 @@ export const AiFeaturesMatrixModal: React.FC<AiFeaturesMatrixModalProps> = ({
       id: 'explainer',
       simpleTitle: '3. Explains the Deal in Plain Words for Every Owner',
       techTitle: 'Grounded Match Synthesis & Multilingual Explainer',
-      models: 'Google Gemini 3.8 Flash / NVIDIA Nemotron',
+      models: 'Configured provider (if available) → grounded template fallback',
       tag: 'Plain-English Summaries',
       benefit:
         'Translates the trade into clear, simple summaries for each owner so they know exactly: "What I give", "What I get", and "How my cash flow is protected".',
@@ -72,10 +72,10 @@ export const AiFeaturesMatrixModal: React.FC<AiFeaturesMatrixModalProps> = ({
       id: 'substitute',
       simpleTitle: '4. Instantly Finds a Backup Shop If Someone Cancels',
       techTitle: 'Autonomous Substitute Matching & Re-Routing',
-      models: 'Gemini 3.8 Flash + Graph Re-Search',
+      models: 'Deterministic graph re-search; AI is not required',
       tag: 'Backup Finder',
       benefit:
-        'If a shop owner suddenly runs out of stock or cancels, Cyclewise automatically searches nearby Nairobi shops to find a replacement supplier so your trade still happens.',
+        'If a shop owner cancels, Cyclewise re-runs the graph to propose routes that exclude that participant. Every revised proposal still needs human review.',
       realExample: 'GreenPack cancels ➔ Assistant finds another box supplier in Industrial Area',
       output: 'Proposed revised swap route sent for your approval',
     },
@@ -94,23 +94,23 @@ export const AiFeaturesMatrixModal: React.FC<AiFeaturesMatrixModalProps> = ({
       id: 'qna',
       simpleTitle: '6. Answers Any Question About Your Swap in Real Time',
       techTitle: 'Grounded Multilingual Q&A Assistant',
-      models: 'NVIDIA Nemotron 3 Ultra / Google Gemini',
+      models: 'Configured provider (if available) + graph facts',
       tag: '24/7 Trade Help',
       benefit:
         'Ask questions in Swahili or English like "How does delivery work?" or "What if they deliver late?" and get instant fact-checked answers based on verified shop data.',
       realExample: '"Je, nitalindwaje kama GreenPack hawatatuma masanduku kwa wakati?"',
-      output: 'Instant step-by-step guidance on escrow lock and courier dispatch',
+      output: 'Guidance based on the selected cycle; no payment or escrow is performed',
     },
     {
       id: 'cascade',
-      simpleTitle: '7. Always Online with Automatic Backup AI Models',
+      simpleTitle: '7. Fails safely when an AI provider is unavailable',
       techTitle: 'Dual-Engine Open-Routing AI Cascade',
       models: 'NVIDIA Nemotron ➔ Gemini Flash ➔ Gemini Failsafe ➔ Local Engine',
-      tag: '100% Uptime',
+      tag: 'Graceful fallback',
       benefit:
-        'Even if an internet server is slow or busy, Cyclewise automatically switches to backup AI engines so you never experience crashes or error pages.',
+        'The router tries configured providers and falls back to deterministic local behavior. Provider availability depends on deployment configuration; no uptime guarantee is implied.',
       realExample: 'Primary AI busy ➔ Seamlessly shifts to Gemini failsafe in 0.2 seconds',
-      output: 'Smooth, reliable experience for all Kenyan shopkeepers',
+      output: 'A transparent fallback path instead of a silent failure',
     },
   ];
 
@@ -150,9 +150,9 @@ export const AiFeaturesMatrixModal: React.FC<AiFeaturesMatrixModalProps> = ({
           <div className="bg-[#EFECE4] p-4 rounded-xl border border-[#E3E0D7] text-xs text-[#17202A] flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center space-x-2">
               <ShieldCheck className="w-5 h-5 text-[#2E8B68] shrink-0" />
-              <span className="font-bold text-[#18243A]">Zero Hallucinations Guarantee:</span>
+              <span className="font-bold text-[#18243A]">Grounding boundary:</span>
               <span className="text-[#68727D]">
-                AI understands language, while math engines guarantee balanced trades and 0 debt.
+                AI may structure language, while deterministic graph facts and human approval constrain proposals.
               </span>
             </div>
 

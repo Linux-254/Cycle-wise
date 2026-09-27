@@ -206,9 +206,9 @@ export const ExchangesTracker: React.FC<ExchangesTrackerProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
                   {[
                     { id: 'Committed', label: '1. Participant Consent', desc: 'All 4 SMEs approved' },
-                    { id: 'Escrow_Locked', label: '2. Escrow Lock', desc: 'Simultaneous mutual guarantee' },
-                    { id: 'Dispatched', label: '3. Dispatched & In Transit', desc: 'Couriers in route' },
-                    { id: 'Delivered_Settled', label: '4. Reconciled & Complete', desc: 'Zero debt settled' },
+                    { id: 'Escrow_Locked', label: '2. Demo authorization', desc: 'PIN sign-off simulation' },
+                    { id: 'Dispatched', label: '3. Demo dispatch', desc: 'No courier API connected' },
+                    { id: 'Delivered_Settled', label: '4. Demo reconciled', desc: 'No payment or escrow executed' },
                   ].map((st, i) => {
                     const isDone = ['Committed', 'Escrow_Locked', 'Dispatched', 'Delivered_Settled'].indexOf(customStage) >= i;
                     const isCurrent = customStage === st.id;

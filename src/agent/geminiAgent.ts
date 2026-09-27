@@ -255,7 +255,7 @@ Respond in JSON strictly:
           why_it_matters: `Fulfills ${toName}'s operational need and resolves immediate downtime without cash outlay.`,
         };
       }),
-      risk_and_evidence_summary: `All ${cycle.cycle_length} participants maintain verified identity and positive past delivery records. Multi-party coordination requires unanimous human commitment before dispatch.`,
+      risk_and_evidence_summary: `${cycle.cycle_length} participants are included in the proposed graph cycle. Identity and exchange history must be reviewed in the evidence ledger; Cyclewise does not infer trust from the match alone. Multi-party coordination requires unanimous human commitment before dispatch.`,
       next_action_recommendation: `Review your give/receive obligation and tap Commit Proposal to lock in your participant agreement.`,
     };
   }
@@ -391,9 +391,9 @@ ${cycleContext}`;
     );
 
     const substituteFound = alternateCycles.length > 0;
-    const modelUsed = 'nvidia/nemotron-3-super-120b';
+    const modelUsed = 'cyclewise-dfs-v1';
 
-    let explanation = `${declinedName} opted out or declined commitment. Cyclewise agent immediately triggered the substitute matching routine to protect remaining participants from downtime.`;
+    let explanation = `${declinedName} opted out or declined commitment. Cyclewise re-ran the deterministic exchange graph to look for a replacement route; no dispatch or commitment was made.`;
     if (substituteFound) {
       explanation += ` Identified an alternative viable cycle (${alternateCycles[0].cycle_length} businesses) unlocking KES ${alternateCycles[0].estimated_value_unlocked.toLocaleString()} without ${declinedName}.`;
     } else {
@@ -478,12 +478,14 @@ ${cycleContext}`;
     // --- STEP 4: Retrieve Trust Evidence (get_trust_evidence) ---
     const s4Start = performance.now();
     const bestCycle = cycles[0];
-    let trustSummary = 'Trust records verified.';
+    let trustSummary = 'Trust evidence available in the participant ledger.';
     if (bestCycle) {
       const verifiedParticipants = bestCycle.sme_sequence.filter(
         (id) => smeMap.get(id)?.identity_status === 'verified'
       ).length;
-      trustSummary = `${verifiedParticipants}/${bestCycle.sme_sequence.length} participants have verified registry identities. Zero active disputes.`;
+      const completedExchanges = bestCycle.sme_sequence.reduce((count, id) => count + (smeMap.get(id)?.trust_events.filter((event) => event.event_type === 'completed_exchange').length || 0), 0);
+      const lateDeliveries = bestCycle.sme_sequence.reduce((count, id) => count + (smeMap.get(id)?.trust_events.filter((event) => event.event_type === 'late_delivery').length || 0), 0);
+      trustSummary = `${verifiedParticipants}/${bestCycle.sme_sequence.length} participants have verified registry identities; ${completedExchanges} completed exchange events recorded; ${lateDeliveries} late-delivery events recorded. Review each event before committing.`;
     }
     steps.push({
       step: 4,

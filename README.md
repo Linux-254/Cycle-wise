@@ -39,15 +39,15 @@
 ## 🛠️ Solution and Key Features
 
 ### (1) Core User Journey & Working Features
-* **Conversational AI Multi-Model Intake:** Shopkeepers register or state their trade needs using natural Swahili, English, or mixed Swahili-English text and voice commands. Powered by NVIDIA Nemotron 3 Ultra and Google Gemini with automatic rate-limit failovers.
-* **Deterministic Graph Cycle Engine:** Bounded Depth-First Search (DFS) computes 3-node and 4-node closed barter loops in `<15ms` with zero hallucination guarantee, ensuring mathematical value parity across participating shops.
+* **Conversational AI Multi-Model Intake:** Shopkeepers register or state their trade needs using natural Swahili, English, or mixed Swahili-English text and voice commands. Configured providers are attempted with a deterministic fallback; availability is reported by `/api/v1/agent/capabilities`.
+* **Deterministic Graph Cycle Engine:** Bounded Depth-First Search (DFS) computes seeded/in-memory 2-to-4-node closed barter loops locally, with repeatable graph facts and explicit human approval before activation. This is not a guarantee of live-market value parity.
 * **Multi-Item Barter Cart & Basket:** Shopkeepers can combine multiple surplus offers and urgent needs into a single trade basket with real-time value parity balancing.
 * **Dual-Account Mobile Sign-Off:** Both participating shop owners review trade dispatch details and digitally authorize transactions via PIN before goods are released.
 * **KRA Section 12 Tax Vouchers:** Generates printable, commercial barter settlement vouchers with SHA-256 cryptographic signature seals for official tax compliance.
 * **Mobile-First Design:** Includes a sticky bottom navbar and 5-step simple guide available in Swahili and English.
 
 ### (2) Anything Mocked, Simulated, or Unfinished
-* M-Pesa automated SMS triggers are simulated via the interactive dual-account PIN authorization modal.
+* Payment, M-Pesa, escrow, courier, and SMS integrations are simulated via interactive demo states; no money is moved and no external payment API is called.
 * National Business Registry ID verification queries verified in-memory fixture states rather than live government endpoints.
 
 ### (3) What Team Built During Hackathon vs Reused Code

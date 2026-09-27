@@ -134,7 +134,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F1E8] text-[#111827] flex flex-col md:flex-row antialiased font-sans">
+    <div className="cw-shell min-h-screen text-[#17201b] flex flex-col md:flex-row antialiased font-sans">
       {/* Desktop Sidebar */}
       <Sidebar
         currentTab={currentTab === 'chat' ? 'request' : currentTab === 'directory' ? 'network' : 'profile'}
@@ -149,7 +149,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-8">
+      <div className="cw-stage flex-1 flex flex-col min-w-0 pb-20 md:pb-8">
         {/* Streamlined Premium Top Navigation Bar */}
         <header className="bg-[#0B132B]/95 text-white px-4 sm:px-6 py-3.5 border-b border-[#1C2B4E] sticky top-0 z-30 shadow-md backdrop-blur-md">
           <div className="max-w-4xl mx-auto flex items-center justify-between gap-3 text-xs">
@@ -231,7 +231,7 @@ export default function App() {
         </div>
 
         {/* Main Content Area */}
-        <main className="max-w-4xl w-full mx-auto px-4 pt-5 sm:pt-6 flex-1 pb-20 md:pb-8 space-y-6">
+        <main className="max-w-5xl w-full mx-auto px-4 pt-5 sm:px-6 sm:pt-8 flex-1 pb-20 md:pb-8 space-y-8">
           {/* Beautiful Hero Landing Banner */}
           <HeroLandingBanner
             onStartMatching={() => setCurrentTab('chat')}

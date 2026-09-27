@@ -39,13 +39,14 @@ app.get('/api/v1/health', async (_req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
-    model: 'gemini-3.8-flash',
+    model: agent.getModelProviders().find((provider) => provider.is_active)?.model_name || 'cyclewise-dfs-v1',
     providers: {
       notification: notifHealth,
       identity: idHealth,
       logistics: { status: 'healthy', provider: 'MockSwiftCouriers' },
     },
     demo_mode: true,
+    note: 'Notification, identity, logistics, and payment integrations are demo adapters until replaced with production providers.',
   });
 });
 
@@ -200,13 +201,23 @@ app.post('/api/v1/requests/validate', (req, res) => {
 app.get('/api/v1/agent/models', (_req, res) => {
   res.json({
     providers: agent.getModelProviders(),
-    default_cascade: [
-      'NVIDIA Nemotron 3 Ultra (nvidia/nemotron-3-super-120b)',
-      'Google Gemini 3.8 Flash (gemini-3.8-flash)',
-      'Google Gemini 3.1 Flash Lite [Failsafe] (gemini-3.1-flash-lite)',
-      'Google Gemini 3.1 Pro [Failsafe] (gemini-3.1-pro-preview)',
-      'Deterministic Grounded Engine (cyclewise-dfs-v1)',
-    ],
+    default_cascade: agent.getModelProviders().filter((provider) => provider.is_configured).map((provider) => provider.model_name).concat(['cyclewise-dfs-v1']),
+  });
+});
+
+// 7c. Honest capability contract for UI and reviewers
+app.get('/api/v1/agent/capabilities', (_req, res) => {
+  const providers = agent.getModelProviders();
+  res.json({
+    interpretation: {
+      status: providers.some((provider) => provider.provider !== 'local' && provider.is_configured) ? 'ai_enabled' : 'deterministic_fallback',
+      configured_providers: providers.filter((provider) => provider.is_configured).map((provider) => provider.id),
+      note: 'AI providers structure language; outputs still pass schema and business validation.',
+    },
+    matching: { status: 'deterministic', engine: 'cyclewise-dfs-v1', max_cycle_length: 4 },
+    explanations: { status: 'grounded', source: 'returned graph edges and participant evidence' },
+    commitment: { status: 'human_required', automatic_activation: false },
+    payments: { status: 'simulated_demo', provider: 'none', automatic_money_movement: false },
   });
 });
 
