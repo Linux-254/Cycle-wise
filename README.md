@@ -11,9 +11,10 @@
 | Field | Submission Details |
 | :--- | :--- |
 | **Team Name** | **NikoKadi** |
-| **Team Leader Full Name** | **Emmanu** |
-| **Team Leader Email** | `brianngatia845@gmail.com` |
+| **Team Leader Full Name** | **Emmanuel Obiero** |
+| **Team Leader Email** | `emmanuelmakobiero@gmail.com` |
 | **Project Title** | **Cyclewise (Nairobi SME Barter Clearing House)** |
+| **Slogan** | **Unlocking SME Potential** |
 | **Live Demo URL** | [https://cycle-wise-mocha.vercel.app/](https://cycle-wise-mocha.vercel.app/) |
 | **Source Code URL** | [https://github.com/Linux-254/Cycle-wise.git](https://github.com/Linux-254/Cycle-wise.git) |
 

@@ -10,7 +10,7 @@ This document contains both the **explanation of the PDF pitch structure** and t
 The provided PDF follows the famous **Guy Kawasaki 10-Slide Pitch Method**, augmented by EY for innovation challenges. The core philosophy is **Show > Tell**, focusing on solving the client's #1 pain with "underlying magic" technology, clear unit economics, and 10x differentiation.
 
 ### The 10 Slides + Cover & Closing:
-1. **Title / Cover:** Company logo, name, challenge purpose ("Challenge Innovation Presentation"), slogan, presenter details, date.
+1. **Title / Cover:** Company logo, name, challenge purpose ("Challenge Innovation Presentation"), slogan ("Unlocking SME Potential"), presenter details, date.
 2. **Problem / Opportunity:** Focus on the client's #1 burning pain (not 4th or 10th). Show the inefficiencies of current status-quo alternatives.
 3. **Value Proposition:** A punchy 1-liner covering: (a) Product/Service, (b) Core pain solved, (c) Big vision.
 4. **Underlying Magic / Technology:** Show > Tell! Diagram the secret sauce (Multi-Model AI + Bounded DFS Graph Search + Dual M-Pesa Escrow + KRA Vouchers). Transition directly to the live prototype.
@@ -38,10 +38,10 @@ PROJECT & STARTUP DETAILS
 ========================================================
 - Project Title: Cyclewise (Nairobi SME Barter Clearing House)
 - Team Name: NikoKadi
-- Team Leader / Presenter: Emmanu (Email: brianngatia845@gmail.com)
+- Team Leader / Presenter: Emmanuel Obiero (Email: emmanuelmakobiero@gmail.com)
 - Live Prototype URL: https://cycle-wise-mocha.vercel.app/
 - Source Code Repository: https://github.com/Linux-254/Cycle-wise.git
-- Slogan: "Unlocking SME Supplies with KES 0.00 Cash Debt"
+- Slogan: "Unlocking SME Potential"
 - Core Tech: Multi-Model AI (NVIDIA Nemotron 3 Ultra + Google Gemini), Custom Bounded DFS Graph Engine (<15ms, 0% hallucination), Dual M-Pesa Daraja Escrow, KRA Section 12 Tax Barter Vouchers.
 
 ========================================================
@@ -52,7 +52,8 @@ Generate detailed, compelling slide content and visual layout suggestions for ea
 SLIDE 1: Title / Cover
 - Logo & Company Name: Cyclewise
 - Purpose: "GOMYCODE Challenge Innovation Presentation"
-- Slogan & Presenter Name / Title / Email / Phone
+- Slogan: "Unlocking SME Potential"
+- Presenter: Emmanuel Obiero (Team Leader) / Email: emmanuelmakobiero@gmail.com
 - Accelerator / Partner logos placeholder
 
 SLIDE 2: Problem / Opportunity
@@ -90,7 +91,7 @@ SLIDE 7: Competitive Analysis (Pitch 10x Better, Not 3x)
 - Why Cyclewise is 10x better: 0% interest, 0% cash loan required, instant 3-4 node matching.
 
 SLIDE 8: Team
-- Core Team NikoKadi: Emmanu & Team.
+- Core Team NikoKadi: Emmanuel Obiero & Team.
 - Key strengths, technical expertise in graph algorithms and mobile AI, and execution capability.
 - Key statement: "We are the right team to execute this because..."
 
@@ -104,7 +105,7 @@ SLIDE 10: Current Status, Accomplishments & Use of Funds
 - Funding ask and breakdown of use of funds (Engineering, SME Hub Onboarding, Regulatory/Tax Compliance).
 
 SLIDE 11: Closing Slide
-- Big central logo, live app link (`https://cycle-wise-mocha.vercel.app/`), contact details, Q&A invitation.
+- Big central logo, live app link (`https://cycle-wise-mocha.vercel.app/`), contact details (Emmanuel Obiero, emmanuelmakobiero@gmail.com), Q&A invitation.
 
 ========================================================
 OUTPUT FORMAT REQUIRED

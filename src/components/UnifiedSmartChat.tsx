@@ -109,6 +109,53 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
     },
   ];
 
+  const handleRunMatchSearchWithText = async (textToSearch: string) => {
+    if (!textToSearch.trim()) return;
+    setIsProcessing(true);
+    setNoticeError(null);
+
+    // Guardrail Check
+    const check = guardrailCheckInput(textToSearch);
+    if (!check.allowed) {
+      const err = `Notice: ${check.reason || 'Please rephrase. Cyclewise is strictly for non-monetary goods & services barter.'}`;
+      setNoticeError(err);
+      setIsProcessing(false);
+      VoiceAssistant.speak(err);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/v1/agent/orchestrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: textToSearch }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const result: OrchestrationResult = await res.json();
+      if (result.cycles && result.cycles.length > 0) {
+        setActiveCycles(result.cycles);
+        setSelectedCycle(result.cycles[0]);
+
+        // Speak immediate AI vocal response!
+        const spokenResponse = `Habari ${businessName}! Mfumo umepata mzunguko wa biashara wa maduka ${result.cycles[0].cycle_length} jijini Nairobi. Thamani ni Shilingi ${result.cycles[0].estimated_value_unlocked.toLocaleString()} bila mkopo.`;
+        setIsPlayingAudio(true);
+        VoiceAssistant.speak(spokenResponse, () => setIsPlayingAudio(false));
+      }
+    } catch (err: unknown) {
+      console.warn('Search notice:', err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRunMatchSearch = () => {
+    handleRunMatchSearchWithText(inputText);
+  };
+
   const toggleVoiceRecording = () => {
     if (isRecording) {
       VoiceAssistant.stopListening();
@@ -120,10 +167,13 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
           setInputText(transcript);
           if (isFinal) {
             setIsRecording(false);
+            // Automatically process audio and respond immediately!
+            handleRunMatchSearchWithText(transcript);
           }
         },
-        () => {
+        (errorMsg) => {
           setIsRecording(false);
+          setNoticeError(errorMsg);
         },
         selectedLanguage === 'swahili' ? 'sw-KE' : 'en-KE'
       );
@@ -137,7 +187,7 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
     } else {
       let speech = '';
       if (selectedCycle) {
-        speech = `Habari ${businessName}. Mfumo umepata mpango wa biashara ${selectedCycle.cycle_length} jijini Nairobi wenye thamani ya Shilingi elfu mia saba na mbili bila mkopo wowote. Kila mfanyabiashara anapata anachohitaji kwa usalama.`;
+        speech = `Habari ${businessName}. Mfumo umepata mpango wa biashara ya maduka ${selectedCycle.cycle_length} jijini Nairobi wenye thamani ya Shilingi ${selectedCycle.estimated_value_unlocked.toLocaleString()} bila mkopo. Kila mfanyabiashara anapata anachohitaji.`;
       } else {
         speech = inputText;
       }
@@ -146,42 +196,6 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
       VoiceAssistant.speak(speech, () => {
         setIsPlayingAudio(false);
       });
-    }
-  };
-
-  const handleRunMatchSearch = async () => {
-    if (!inputText.trim()) return;
-    setIsProcessing(true);
-    setNoticeError(null);
-
-    // Guardrail Check
-    const check = guardrailCheckInput(inputText);
-    if (!check.allowed) {
-      setNoticeError(`Notice: ${check.reason || 'Please rephrase. Cyclewise is strictly for non-monetary goods & services barter.'}`);
-      setIsProcessing(false);
-      return;
-    }
-
-    try {
-      const res = await fetch('/api/v1/agent/orchestrate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: inputText }),
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-
-      const result: OrchestrationResult = await res.json();
-      if (result.cycles && result.cycles.length > 0) {
-        setActiveCycles(result.cycles);
-        setSelectedCycle(result.cycles[0]);
-      }
-    } catch (err: unknown) {
-      console.warn('Search notice:', err);
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -207,12 +221,16 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
       setParty1Signed(true);
       const ref = 'QJK' + Math.floor(100000 + Math.random() * 900000) + '01A';
       setMpesaRef1(ref);
-      setShowMpesaAlert(`M-Pesa Confirmed: KES 0.00 Non-Monetary Trade Escrow Locked for ${businessName}. Ref #${ref}`);
+      const msg = `M-Pesa Confirmed: KES 0.00 Non-Monetary Trade Escrow Locked for ${businessName}. Ref #${ref}`;
+      setShowMpesaAlert(msg);
+      VoiceAssistant.speak(`M-Pesa authorization verified for ${businessName}. Ref ${ref}`);
     } else if (activeStkTarget === 'party2') {
       setParty2Signed(true);
       const ref = 'QJK' + Math.floor(100000 + Math.random() * 900000) + '02B';
       setMpesaRef2(ref);
-      setShowMpesaAlert(`M-Pesa Confirmed: Reciprocal Delivery Authorized for ${party2Name}. Ref #${ref}`);
+      const msg = `M-Pesa Confirmed: Reciprocal Delivery Authorized for ${party2Name}. Ref #${ref}`;
+      setShowMpesaAlert(msg);
+      VoiceAssistant.speak(`M-Pesa reciprocal sign-off complete for ${party2Name}. Trade settled with 0 debt.`);
       if (selectedCycle) {
         onCommitCycle(selectedCycle.id);
       }
@@ -349,7 +367,10 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
             {samplePrompts.map((p, idx) => (
               <button
                 key={idx}
-                onClick={() => setInputText(p.text)}
+                onClick={() => {
+                  setInputText(p.text);
+                  handleRunMatchSearchWithText(p.text);
+                }}
                 className="text-left p-2.5 rounded-xl border border-[#E3E0D7] bg-[#FAF9F5] hover:bg-white hover:border-[#121B2B] transition-all text-xs space-y-0.5 shadow-2xs group"
               >
                 <span className="font-bold text-[#18243A] group-hover:text-[#2E8B68] block">{p.title}</span>
@@ -363,11 +384,17 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
         <div className="space-y-2">
           <label className="text-xs font-bold text-[#18243A] flex items-center justify-between">
             <span>What do you have extra & what do you need urgently?</span>
-            {isRecording && (
-              <span className="text-[#DC2626] font-bold text-[11px] animate-pulse">
-                Listening... Speak now
+            {isRecording ? (
+              <span className="text-[#DC2626] font-bold text-[11px] animate-pulse flex items-center space-x-1">
+                <span className="w-2 h-2 rounded-full bg-[#DC2626] animate-ping"></span>
+                <span>Listening live... Speak now (Will process immediately)</span>
               </span>
-            )}
+            ) : isPlayingAudio ? (
+              <span className="text-[#2E8B68] font-bold text-[11px] animate-pulse flex items-center space-x-1">
+                <Volume2 className="w-3.5 h-3.5" />
+                <span>Speaking AI response aloud...</span>
+              </span>
+            ) : null}
           </label>
 
           <div className="relative">
@@ -375,7 +402,9 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               rows={3}
-              className="w-full p-3.5 pr-24 rounded-xl border border-[#E3E0D7] text-xs sm:text-sm text-[#17202A] outline-hidden focus:ring-2 focus:ring-[#121B2B] bg-white transition-all shadow-2xs"
+              className={`w-full p-3.5 pr-24 rounded-xl border text-xs sm:text-sm text-[#17202A] outline-hidden focus:ring-2 focus:ring-[#121B2B] bg-white transition-all shadow-2xs ${
+                isRecording ? 'border-[#DC2626] ring-2 ring-[#DC2626]/20' : 'border-[#E3E0D7]'
+              }`}
               placeholder="Example: Nahitaji cartons 20 za cooking oil. Naweza kusaidia na bookkeeping..."
             />
 
@@ -387,7 +416,7 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                     ? 'bg-[#DC2626] text-white ring-4 ring-[#DC2626]/20 animate-pulse'
                     : 'bg-[#FAF9F5] hover:bg-[#EFECE4] text-[#18243A] border border-[#E3E0D7]'
                 }`}
-                title="Speak using microphone"
+                title="Speak using microphone (Auto-sends and responds immediately)"
               >
                 {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-[#2E8B68]" />}
               </button>
