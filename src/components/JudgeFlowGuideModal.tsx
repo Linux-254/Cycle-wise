@@ -16,7 +16,8 @@ import {
   HelpCircle,
   Sparkles,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Globe
 } from 'lucide-react';
 
 interface JudgeFlowGuideModalProps {
@@ -34,6 +35,7 @@ export const JudgeFlowGuideModal: React.FC<JudgeFlowGuideModalProps> = ({
   onOpenOnboarding,
   onOpenAgentCommand,
 }) => {
+  const [guideLang, setGuideLang] = useState<'swahili' | 'english' | 'swahili_english'>('swahili');
   const [expandedTech, setExpandedTech] = useState<{ [key: number]: boolean }>({});
 
   if (!isOpen) return null;
@@ -42,87 +44,140 @@ export const JudgeFlowGuideModal: React.FC<JudgeFlowGuideModalProps> = ({
     setExpandedTech((prev) => ({ ...prev, [stepNum]: !prev[stepNum] }));
   };
 
-  const steps = [
-    {
-      step: 1,
-      simpleTitle: '1. Tell Us What You Have & What You Need',
-      techTitle: 'SME Onboarding & AI Conversational Intake',
-      tabName: 'request' as const,
-      tabLabel: 'Post Surplus or Need',
-      icon: Store,
-      simpleSummary:
-        'Instead of filling long complicated forms, you just type or speak in English, Swahili, or Sheng (e.g. "I have extra cooking oil cartons, I need bookkeeping"). Our smart assistant automatically figures out the quantities, prices, and locations.',
-      howItHelpsShop:
-        'Takes under 30 seconds. Works in normal market language without needing accounting software.',
-      techDetails:
-        'NLP pipeline uses NVIDIA Nemotron 3 Ultra / Google Gemini 3.8 Flash to normalize unstructured dialect into structured JSON entities, validated with strict schema boundaries.',
-      actionText: 'Go to Intake Page',
-    },
-    {
-      step: 2,
-      simpleTitle: '2. We Find a Closed Swap Loop with Other Nairobi Shops',
-      techTitle: 'Deterministic Graph Cycle Matching (Bounded DFS)',
-      tabName: 'matches' as const,
-      tabLabel: 'Matched Swap Loops',
-      icon: Layers,
-      simpleSummary:
-        'Direct 2-way swaps rarely work (e.g. a baker might need oil, but the oil seller doesn’t need bread). Cyclewise finds 3-way or 4-way loops where Shop A supplies Shop B, B supplies C, C supplies D, and D supplies A. Everyone gets what they need with KES 0.00 cash loan!',
-      howItHelpsShop:
-        'Unlocks essential supplies immediately without paying shylocks 20% monthly interest.',
-      techDetails:
-        'Bounded Depth-First Search (DFS) runs in <15ms with 0 hallucination guarantee, computing parity match percentage and ensuring mathematical balance.',
-      actionText: 'View Matched Loops',
-    },
-    {
-      step: 3,
-      simpleTitle: '3. Check That Every Shop is Real and Trustworthy',
-      techTitle: 'Trust Evidence & National Registry Verification',
-      tabName: 'profile' as const,
-      tabLabel: 'Verified Shop Records',
-      icon: UserCheck,
-      simpleSummary:
-        'Before you agree to any swap, you can see the other businesses’ verified licenses, their past delivery completion records (e.g. 98% on-time), and customer reviews.',
-      howItHelpsShop:
-        'Zero risk of fake sellers or scams. You know exactly who you are dealing with.',
-      techDetails:
-        'Queries cryptographic trust events, registry verification metadata, and active dispute records to produce transparent trust scores.',
-      actionText: 'Inspect Shop Records',
-    },
-    {
-      step: 4,
-      simpleTitle: '4. Both Sides Agree & Deliver at the Same Time',
-      techTitle: 'Bilateral Escrow Lock & Dispatch Manifest',
-      tabName: 'exchanges' as const,
-      tabLabel: 'Active Swaps Hub',
-      icon: Lock,
-      simpleSummary:
-        'You see a clear Dispatch Manifest ("Who sends what to whom"). All 4 business owners tap "Agree". Goods are locked in a mutual safety release so no one is left stranded.',
-      howItHelpsShop:
-        'You only release your goods when the courier pickup and reciprocal delivery are confirmed.',
-      techDetails:
-        'Multi-party state machine transitions from Pending to Committed with synchronized bilateral escrow verification.',
-      actionText: 'See Active Swaps',
-    },
-    {
-      step: 5,
-      simpleTitle: '5. Download Official Barter Invoice & Settlement Voucher',
-      techTitle: 'Non-Monetary Settlement & Audit Trail',
-      tabName: 'exchanges' as const,
-      tabLabel: 'Print Barter Voucher',
-      icon: FileText,
-      simpleSummary:
-        'When the swap is complete, you get an official, printable Barter Settlement Voucher for your tax and bookkeeping records showing KES 0.00 debt and balanced fair value.',
-      howItHelpsShop:
-        'Official commercial proof for your KRA tax returns and business bookkeeping.',
-      techDetails:
-        'Generates cryptographic SHA-256 verified barter voucher with immutable state audit logs.',
-      actionText: 'View Voucher & Audit',
-    },
-  ];
+  const stepsData = {
+    english: [
+      {
+        step: 1,
+        title: '1. Register & Say What You Need',
+        summary: 'Type or speak what extra goods/services you have and what you need urgently (e.g. "I have cooking oil, I need bookkeeping").',
+        benefit: 'No complicated forms. Takes under 30 seconds.',
+        techTitle: 'AI Multi-Model Conversational Intake',
+        techDetails: 'NVIDIA Nemotron 3 Ultra & Gemini 3.8 Flash normalize language into structured JSON entities.',
+      },
+      {
+        step: 2,
+        title: '2. Smart Closed Barter Loop',
+        summary: 'Cyclewise links 3 or 4 Nairobi shops in a closed swap loop (Shop A -> B -> C -> A) so everyone gets what they need with KES 0.00 cash debt!',
+        benefit: 'Get supplies today without paying 20% shylock interest.',
+        techTitle: 'Bounded DFS Graph Engine (<15ms)',
+        techDetails: 'Deterministic depth-first search finds non-monetary trade loops with 0 hallucination.',
+      },
+      {
+        step: 3,
+        title: '3. Verify Shop Records',
+        summary: 'Check that each shop has verified business licenses, on-time delivery ratings, and genuine trust history.',
+        benefit: 'Zero risk of fraud or fake sellers.',
+        techTitle: 'Cryptographic Trust & License Verification',
+        techDetails: 'Integrates real-time verification records and historical completion events.',
+      },
+      {
+        step: 4,
+        title: '4. Dual Mobile Sign-Off',
+        summary: 'Both shopkeepers review the dispatch details and tap "Sign & Authorize" on their phones before goods are delivered.',
+        benefit: 'Safe mutual release so no seller is left stranded.',
+        techTitle: 'Bilateral Escrow Release & Dispatch Lock',
+        techDetails: 'Multi-party state machine enforces synchronized dual PIN authorization.',
+      },
+      {
+        step: 5,
+        title: '5. Download Official Invoice',
+        summary: 'Get an official, printable Barter Settlement Voucher showing KES 0.00 cash debt for your KRA tax and accounting records.',
+        benefit: '100% compliant commercial receipt for your tax returns.',
+        techTitle: 'KRA Section 12 Barter Invoice & SHA-256 Seal',
+        techDetails: 'Generates immutable tax voucher with dual signature hashes.',
+      },
+    ],
+    swahili: [
+      {
+        step: 1,
+        title: 'Hatua 1: Jisajili Na Eleza Unachohitaji',
+        summary: 'Andika au sema kwa simu bidhaa za ziada ulizonazo na unachohitaji haraka (k.m. "Niko na mafuta ya kupika, nahitaji mtu wa hesabu").',
+        benefit: 'Inachukua chini ya sekunde 30 tu bila fomu ndefu.',
+        techTitle: 'AI Multi-Model Conversational Intake',
+        techDetails: 'Inatumia NVIDIA Nemotron na Gemini 3.8 Flash kubadili maneno ya kawaida kuwa muundo wa biashara.',
+      },
+      {
+        step: 2,
+        title: 'Hatua 2: Mfumo Wa Biashara Ya Maduka Mengine',
+        summary: 'Cyclewise inaunganisha maduka 3 au 4 jijini Nairobi katika mzunguko wa kubadilishana ili kila mtu apate anachotaka kwa Deni la Shilingi 0.00!',
+        benefit: 'Pata bidhaa za duka leo bila kuchukua mikopo ya riba kubwa.',
+        techTitle: 'Bounded DFS Graph Engine (<15ms)',
+        techDetails: 'Inatafuta mzunguko kamili wa kubadilishana bidhaa bila kupoteza thamani.',
+      },
+      {
+        step: 3,
+        title: 'Hatua 3: Kagua Usalama Wa Duka',
+        summary: 'Hakikisha maduka mengine yana leseni halali za biashara na rekodi nzuri za utoaji bidhaa kabla ya kukubali.',
+        benefit: 'Hakuna hatari ya kutapeliwa au kupokea bidhaa bandia.',
+        techTitle: 'Cryptographic Trust & License Verification',
+        techDetails: 'Inakagua leseni na historia ya biashara zote zilizothibitishwa.',
+      },
+      {
+        step: 4,
+        title: 'Hatua 4: Kugonga Saini Pamoja Kwa Simu',
+        summary: 'Wafanyabiashara wote wawili wanakagua maelezo ya mzigo na kugonga "Kukubali & Kusaini" kwa simu zao bidhaa zikitoka.',
+        benefit: 'Ulinzi wa pamoja ili kila mtu apokee bidhaa zake kwa amani.',
+        techTitle: 'Bilateral Escrow Release & Dispatch Lock',
+        techDetails: 'Inahakikisha pande zote mbili zimeridhia kabla ya kutoa bidhaa.',
+      },
+      {
+        step: 5,
+        title: 'Hatua 5: Pakua Risiti Halisi Ya KRA',
+        summary: 'Pata risiti rasmi ya biashara inayoonyesha Deni la Shilingi 0.00 kwa ajili ya hesabu zako na kodi ya KRA.',
+        benefit: 'Risiti halali ya kisheria kwa ajili ya ushuru na vitabu vyako vya biashara.',
+        techTitle: 'KRA Section 12 Barter Invoice & SHA-256 Seal',
+        techDetails: 'Inatengeneza risiti yenye muhuri wa kidijitali usioweza kubadilishwa.',
+      },
+    ],
+    swahili_english: [
+      {
+        step: 1,
+        title: 'Step 1: Onboard & State Your Needs',
+        summary: 'Andika au sema extra stock uliyonayo na unachohitaji urgently in plain Swahili or English.',
+        benefit: 'Simple and fast. Under 30 seconds.',
+        techTitle: 'AI Multi-Model Conversational Intake',
+        techDetails: 'Parses bilingual Swahili-English input into structured JSON.',
+      },
+      {
+        step: 2,
+        title: 'Step 2: Connect 3-4 Shop Swap Loop',
+        summary: 'Cyclewise links 3 to 4 Nairobi shops. Shop A delivers to B, B to C, C to A. Everyone gets supplied with KES 0.00 cash loan!',
+        benefit: 'Get stock immediately without high-interest loans.',
+        techTitle: 'Bounded DFS Graph Engine (<15ms)',
+        techDetails: 'Computes multi-node closed loops with zero cash debt.',
+      },
+      {
+        step: 3,
+        title: 'Step 3: Verify Shop Authenticity',
+        summary: 'Kagua business licenses and trust scores of other shops before confirming the trade.',
+        benefit: 'Zero risk of fraud or unverified businesses.',
+        techTitle: 'Cryptographic Trust Verification',
+        techDetails: 'Verifies registry licenses and delivery completion logs.',
+      },
+      {
+        step: 4,
+        title: 'Step 4: Confirm Dual Sign-Off',
+        summary: 'Both shop owners tap "Approve & Sign" on their phones upon delivery dispatch.',
+        benefit: 'Synchronized escrow release keeps both businesses safe.',
+        techTitle: 'Bilateral Escrow Lock',
+        techDetails: 'Enforces dual mobile PIN authorization.',
+      },
+      {
+        step: 5,
+        title: 'Step 5: Print KRA Barter Voucher',
+        summary: 'Download an official, printable Barter Settlement Voucher showing KES 0.00 debt for KRA tax records.',
+        benefit: 'Official tax receipt for business accounting.',
+        techTitle: 'KRA Barter Invoice & SHA-256 Seal',
+        techDetails: 'Generates immutable tax voucher with cryptographic hashes.',
+      },
+    ],
+  };
+
+  const steps = stepsData[guideLang];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
-      <div className="bg-[#FAF9F5] border border-[#E3E0D7] rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-[#FAF9F5] border border-[#E3E0D7] rounded-2xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="p-4 sm:p-5 bg-[#121B2B] text-white flex items-center justify-between border-b border-[#202E44]">
           <div className="flex items-center space-x-3">
@@ -131,13 +186,21 @@ export const JudgeFlowGuideModal: React.FC<JudgeFlowGuideModalProps> = ({
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="font-bold text-base text-white">How Cyclewise Works: 5-Step Simple Guide</h3>
+                <h3 className="font-bold text-base text-white">
+                  {guideLang === 'swahili'
+                    ? 'Mwongozo Wa Cyclewise (Hatua 5)'
+                    : guideLang === 'swahili_english'
+                    ? 'Cyclewise Guide (Kiswahili + English)'
+                    : 'How Cyclewise Works: 5 Simple Steps'}
+                </h3>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E7B84B] text-[#121B2B] font-bold">
-                  Zero Debt
+                  KES 0.00 Loan
                 </span>
               </div>
               <p className="text-xs text-[#8E9CAE]">
-                From posting your surplus to receiving supplies and downloading your official barter invoice
+                {guideLang === 'swahili'
+                  ? 'Kuanzia kusajili duka hadi kupata risiti halali ya KRA'
+                  : 'From shop registration to downloading your official KRA barter voucher'}
               </p>
             </div>
           </div>
@@ -151,75 +214,99 @@ export const JudgeFlowGuideModal: React.FC<JudgeFlowGuideModalProps> = ({
           </button>
         </div>
 
+        {/* Language Selection Bar */}
+        <div className="bg-white border-b border-[#E3E0D7] px-4 py-2 flex items-center justify-between text-xs">
+          <div className="flex items-center space-x-1.5 font-bold text-[#18243A]">
+            <Globe className="w-4 h-4 text-[#2E8B68]" />
+            <span>Chagua Lugha (Language):</span>
+          </div>
+
+          <div className="flex items-center space-x-1">
+            {[
+              { id: 'swahili', label: 'Kiswahili' },
+              { id: 'english', label: 'English' },
+              { id: 'swahili_english', label: 'Kiswahili + English' },
+            ].map((l) => (
+              <button
+                key={l.id}
+                onClick={() => setGuideLang(l.id as any)}
+                className={`px-3 py-1 rounded-lg text-xs transition-all ${
+                  guideLang === l.id
+                    ? 'bg-[#121B2B] text-[#E7B84B] font-bold shadow-xs'
+                    : 'bg-[#FAF9F5] text-[#68727D] hover:bg-[#EFECE4]'
+                }`}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-          {/* Plain English Banner */}
-          <div className="bg-[#EAF5F0] border border-[#2E8B68]/30 rounded-xl p-4 text-xs text-[#17202A] flex items-start space-x-3">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5">
+          {/* Friendly Summary Banner */}
+          <div className="bg-[#EAF5F0] border border-[#2E8B68]/30 rounded-xl p-3.5 text-xs text-[#17202A] flex items-start space-x-3">
             <ShieldCheck className="w-5 h-5 text-[#2E8B68] shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-[#2E8B68] text-sm block">The Core Idea Made Simple:</span>
+              <span className="font-bold text-[#2E8B68] text-sm block">
+                {guideLang === 'swahili'
+                  ? 'Lengo Kuu Kwa Kifupi:'
+                  : 'Core Purpose:'}
+              </span>
               <p className="text-[#17202A] mt-1 leading-relaxed text-xs">
-                In Kenya, millions of small businesses get trapped in expensive emergency loans (paying 15% to 20% interest per month) just to buy daily stock or pay couriers. <strong>Cyclewise connects you with other trusted shops to trade what you have extra for what you need</strong>—with <strong>KES 0.00 cash loan</strong>.
+                {guideLang === 'swahili'
+                  ? 'Cyclewise inasaidia wafanyabiashara wa Nairobi kubadilishana bidhaa au huduma walizonazo kwa kile wanachohitaji bila kuchukua mikopo ya pesa zenye riba kubwa. Kila biashara inapata inachotaka na Deni la Shilingi 0.00.'
+                  : 'Cyclewise helps Nairobi SMEs trade their surplus inventory or services directly for what they urgently need—with KES 0.00 cash debt and zero high-interest loans.'}
               </p>
             </div>
           </div>
 
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             {steps.map((st) => {
-              const Icon = st.icon;
               const isTechOpen = !!expandedTech[st.step];
 
               return (
                 <div
                   key={st.step}
-                  className="bg-white border border-[#E3E0D7] rounded-xl p-4 sm:p-5 shadow-2xs space-y-3 hover:border-[#121B2B]/40 transition-all"
+                  className="bg-white border border-[#E3E0D7] rounded-xl p-4 shadow-2xs space-y-2.5 hover:border-[#121B2B]/40 transition-all"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-[#121B2B] text-[#E7B84B] font-bold text-xs flex items-center justify-center shrink-0">
-                        {st.step}
-                      </div>
-                      <span className="font-bold text-sm text-[#18243A]">{st.simpleTitle}</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-7 h-7 rounded-full bg-[#121B2B] text-[#E7B84B] font-bold text-xs flex items-center justify-center shrink-0">
+                      {st.step}
                     </div>
-
-                    <button
-                      onClick={() => {
-                        onClose();
-                        onJumpToTab(st.tabName);
-                      }}
-                      className="px-3.5 py-1.5 rounded-lg bg-[#121B2B] hover:bg-[#202E44] text-[#E7B84B] font-bold text-xs transition-colors flex items-center space-x-1 shadow-xs"
-                    >
-                      <span>{st.actionText}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+                    <span className="font-bold text-sm text-[#18243A]">{st.title}</span>
                   </div>
 
-                  <p className="text-xs text-[#17202A] leading-relaxed pl-11">
-                    {st.simpleSummary}
+                  <p className="text-xs text-[#17202A] leading-relaxed pl-10">
+                    {st.summary}
                   </p>
 
-                  <div className="ml-11 p-3 rounded-lg bg-[#FAF9F5] border border-[#EAE6DB] text-xs space-y-1">
+                  <div className="ml-10 p-2.5 rounded-lg bg-[#FAF9F5] border border-[#EAE6DB] text-xs space-y-0.5">
                     <div className="flex items-center space-x-1.5 font-bold text-[#2E8B68]">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Why this is great for a shop owner:</span>
+                      <span>
+                        {guideLang === 'swahili'
+                          ? 'Faida kwa mfanyabiashara:'
+                          : 'Why this helps your shop:'}
+                      </span>
                     </div>
                     <p className="text-[#68727D] text-[11px] leading-relaxed">
-                      {st.howItHelpsShop}
+                      {st.benefit}
                     </p>
                   </div>
 
                   {/* Toggle for Judges / Technical detail */}
-                  <div className="ml-11 pt-1">
+                  <div className="ml-10 pt-0.5">
                     <button
                       onClick={() => toggleTech(st.step)}
                       className="text-[11px] font-semibold text-[#68727D] hover:text-[#18243A] flex items-center space-x-1"
                     >
-                      <span>{isTechOpen ? 'Hide' : 'Show'} Technical Details for Judges</span>
+                      <span>{isTechOpen ? 'Ficha' : 'Onyesha'} Maelezo Ya Kitalaamu (Technical Details)</span>
                       {isTechOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                     </button>
 
                     {isTechOpen && (
-                      <div className="mt-2 p-3 rounded-lg bg-[#F0EEED] border border-[#D5D1C4] text-[11px] text-[#17202A] space-y-1">
+                      <div className="mt-2 p-2.5 rounded-lg bg-[#F0EEED] border border-[#D5D1C4] text-[11px] text-[#17202A] space-y-1">
                         <span className="font-bold block text-[#18243A]">Technical Implementation: {st.techTitle}</span>
                         <p className="text-[#68727D]">{st.techDetails}</p>
                       </div>
@@ -234,7 +321,7 @@ export const JudgeFlowGuideModal: React.FC<JudgeFlowGuideModalProps> = ({
         {/* Footer */}
         <div className="p-4 bg-[#EFECE4] border-t border-[#E3E0D7] flex flex-wrap items-center justify-between gap-2">
           <span className="text-xs text-[#68727D]">
-            Ready to try it out?
+            {guideLang === 'swahili' ? 'Je, uko tayari kujaribu?' : 'Ready to start?'}
           </span>
           <div className="flex items-center space-x-2">
             <button
@@ -245,7 +332,9 @@ export const JudgeFlowGuideModal: React.FC<JudgeFlowGuideModalProps> = ({
               className="px-3.5 py-2 rounded-xl bg-[#E7B84B] hover:bg-[#D4A538] text-[#121B2B] font-bold text-xs transition-colors flex items-center space-x-1.5 shadow-xs"
             >
               <Store className="w-3.5 h-3.5" />
-              <span>Register Your Shop</span>
+              <span>
+                {guideLang === 'swahili' ? 'Jisajili Biashara Yako' : 'Register Your Shop'}
+              </span>
             </button>
             <button
               onClick={() => {
@@ -255,7 +344,7 @@ export const JudgeFlowGuideModal: React.FC<JudgeFlowGuideModalProps> = ({
               className="px-4 py-2 rounded-xl bg-[#121B2B] hover:bg-[#202E44] text-[#E7B84B] font-bold text-xs transition-colors flex items-center space-x-1.5 shadow-xs"
             >
               <Play className="w-3.5 h-3.5" />
-              <span>Test Trade Assistant</span>
+              <span>{guideLang === 'swahili' ? 'Anza Biashara Sasa' : 'Test Assistant'}</span>
             </button>
           </div>
         </div>

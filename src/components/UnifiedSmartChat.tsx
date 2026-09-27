@@ -20,7 +20,11 @@ import {
   HelpCircle,
   X,
   Check,
-  Printer
+  Printer,
+  UserCheck,
+  Store,
+  Key,
+  CheckSquare
 } from 'lucide-react';
 
 interface UnifiedSmartChatProps {
@@ -28,6 +32,7 @@ interface UnifiedSmartChatProps {
   initialCycles: ExchangeCycle[];
   onCommitCycle: (cycleId: string) => void;
   onOpenGuide: () => void;
+  onOpenOnboarding: () => void;
 }
 
 export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
@@ -35,6 +40,7 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
   initialCycles,
   onCommitCycle,
   onOpenGuide,
+  onOpenOnboarding,
 }) => {
   // Simple Onboarding State
   const [businessName, setBusinessName] = useState('Amina Wholesale Foods');
@@ -58,8 +64,11 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
-  // Payment Demo Voucher Modal State
+  // Dual-Account Payment Settlement States
   const [showPaymentVoucher, setShowPaymentVoucher] = useState(false);
+  const [party1Signed, setParty1Signed] = useState(true);
+  const [party2Signed, setParty2Signed] = useState(false);
+  const [party2Name, setParty2Name] = useState('GreenPack KE (Packaging Supplier)');
 
   useEffect(() => {
     if (initialCycles.length > 0 && !selectedCycle) {
@@ -166,10 +175,23 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
     }
   };
 
-  const handleCompleteSettlement = () => {
+  const handleOpenSettlementModal = () => {
     if (selectedCycle) {
-      onCommitCycle(selectedCycle.id);
+      // Determine secondary party name
+      if (selectedCycle.edges.length > 1) {
+        const edge2 = selectedCycle.edges[1];
+        setParty2Name(smesMap.get(edge2.from_sme_id)?.name || 'GreenPack KE');
+      }
+      setParty1Signed(true);
+      setParty2Signed(false);
       setShowPaymentVoucher(true);
+    }
+  };
+
+  const handleCompleteDualSettlement = () => {
+    if (selectedCycle) {
+      setParty2Signed(true);
+      onCommitCycle(selectedCycle.id);
     }
   };
 
@@ -219,11 +241,20 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
 
           <div className="flex items-center space-x-2">
             <button
+              onClick={onOpenOnboarding}
+              className="px-3 py-1.5 rounded-xl bg-[#E7B84B] hover:bg-[#D4A538] text-[#121B2B] font-bold text-xs transition-all flex items-center space-x-1 shadow-xs"
+            >
+              <Store className="w-3.5 h-3.5" />
+              <span>Register New Shop</span>
+            </button>
+
+            <button
               onClick={onOpenGuide}
               className="px-3 py-1.5 rounded-xl bg-[#FAF9F5] hover:bg-[#EFECE4] text-[#18243A] border border-[#E3E0D7] font-semibold text-xs transition-colors"
             >
               <span>How It Works</span>
             </button>
+
             <button
               onClick={() => setIsEditingBusiness(!isEditingBusiness)}
               className="text-xs font-semibold text-[#18243A] hover:underline"
@@ -425,38 +456,38 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
               })}
             </div>
 
-            {/* 4. Minimalist Settlement Action & Payment Demo */}
+            {/* 4. Minimalist Settlement Action & Dual Account Demo */}
             <div className="p-4 rounded-xl bg-[#EAF5F0] border border-[#2E8B68]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="font-bold text-xs text-[#2E8B68] block">Ready for Barter Settlement</span>
+                <span className="font-bold text-xs text-[#2E8B68] block">Ready for Dual-Account Barter Settlement</span>
                 <p className="text-xs text-[#17202A] mt-0.5">
-                  Synchronized bilateral escrow release &bull; KES 0.00 cash debt created
+                  Simultaneous bilateral authorization &bull; KES 0.00 cash debt created
                 </p>
               </div>
 
               <button
-                onClick={handleCompleteSettlement}
+                onClick={handleOpenSettlementModal}
                 className="px-5 py-2.5 rounded-xl bg-[#2E8B68] hover:bg-[#257356] text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all shadow-xs"
               >
                 <Check className="w-4 h-4" />
-                <span>Complete KES 0.00 Barter Settlement</span>
+                <span>Demo Dual-Account Settlement</span>
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* 5. Minimalist Payment & Digital Barter Voucher Modal */}
+      {/* 5. Minimalist Dual-Account Settlement & Digital Barter Voucher Modal */}
       {showPaymentVoucher && selectedCycle && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white border border-[#E3E0D7] rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 space-y-0">
+          <div className="bg-white border border-[#E3E0D7] rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 space-y-0 max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="p-4 sm:p-5 bg-[#121B2B] text-white flex items-center justify-between">
               <div className="flex items-center space-x-2.5">
                 <FileText className="w-5 h-5 text-[#E7B84B]" />
                 <div>
-                  <h3 className="font-bold text-base text-white">Commercial Barter Settlement Voucher</h3>
-                  <p className="text-xs text-[#8E9CAE]">Official Non-Monetary Trade Invoice & Tax Receipt</p>
+                  <h3 className="font-bold text-base text-white">Dual-Account Barter Settlement & Voucher</h3>
+                  <p className="text-xs text-[#8E9CAE]">Bilateral Escrow Release & Commercial Voucher</p>
                 </div>
               </div>
               <button
@@ -467,22 +498,66 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
               </button>
             </div>
 
+            {/* Dual Account Sign-Off Demo Bar */}
+            <div className="p-4 bg-[#EFECE4] border-b border-[#E3E0D7] space-y-2">
+              <span className="text-xs font-bold text-[#18243A] block">
+                Dual-Account Authorization Status (Both Shops Must Authorize):
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {/* Party 1 Account */}
+                <div className="p-3 rounded-xl bg-white border border-[#E3E0D7] space-y-1">
+                  <div className="flex items-center justify-between font-bold text-[#18243A]">
+                    <span>Party 1: {businessName}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EAF5F0] text-[#2E8B68]">
+                      <Check className="w-3 h-3 inline mr-1" />
+                      Party 1 Signed
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-[#68727D] block">PIN Auth: ****845 &bull; Eastleigh Node</span>
+                </div>
+
+                {/* Party 2 Account (Interactive Simulator) */}
+                <div className={`p-3 rounded-xl border space-y-1 ${party2Signed ? 'bg-white border-[#2E8B68]' : 'bg-[#FFF7ED] border-[#FDBA74]'}`}>
+                  <div className="flex items-center justify-between font-bold text-[#18243A]">
+                    <span>Party 2: {party2Name}</span>
+                    {party2Signed ? (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EAF5F0] text-[#2E8B68]">
+                        <Check className="w-3 h-3 inline mr-1" />
+                        Party 2 Signed
+                      </span>
+                    ) : (
+                      <button
+                        onClick={handleCompleteDualSettlement}
+                        className="text-[11px] px-2.5 py-1 rounded-lg bg-[#2E8B68] text-white font-bold hover:bg-[#257356] transition-colors shadow-2xs"
+                      >
+                        Sign as Party 2
+                      </button>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-[#68727D] block">
+                    {party2Signed ? 'PIN Auth: ****102 • Verified Dispatch' : 'Awaiting Party 2 Digital Approval'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {/* Printable Voucher Body */}
-            <div className="p-6 space-y-4 text-xs text-[#17202A] bg-[#FAF9F5]">
+            <div className="p-5 space-y-4 text-xs text-[#17202A] bg-[#FAF9F5]">
               <div className="p-4 bg-white rounded-xl border border-[#E3E0D7] space-y-3 shadow-2xs">
                 <div className="flex justify-between items-start border-b border-[#EFECE4] pb-3">
                   <div>
                     <span className="font-bold text-sm text-[#18243A] block">Nairobi Barter Clearing Voucher</span>
                     <span className="text-[#68727D] text-[11px]">Voucher ID: #CW-2026-0927-SETTLED</span>
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-[#EAF5F0] text-[#2E8B68] font-bold text-xs">
-                    100% SETTLED
+                  <span className={`px-3 py-1 rounded-full font-bold text-xs ${party2Signed ? 'bg-[#EAF5F0] text-[#2E8B68]' : 'bg-[#FFF7ED] text-[#D8783D]'}`}>
+                    {party2Signed ? '100% SETTLED & ESCROW RELEASED' : 'PENDING DUAL AUTHORIZATION'}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-[11px]">
                   <div>
-                    <span className="text-[#68727D] block">Issuing Business:</span>
+                    <span className="text-[#68727D] block">Primary Issuer (Party 1):</span>
                     <strong className="text-[#18243A] font-bold">{businessName}</strong>
                     <span className="block text-[#68727D]">{location}</span>
                   </div>
@@ -504,25 +579,31 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                 </div>
 
                 <div className="pt-2 border-t border-[#EFECE4] flex items-center justify-between text-[10px] text-[#68727D]">
-                  <span>SHA-256 Seal: <code>a8f94c2e71d29384b...</code></span>
+                  <span>SHA-256 Dual Seal: <code>a8f94c2e71d... &bull; 7d291b8a...</code></span>
                   <span>Compliance: KRA Non-Monetary Trade Section 12</span>
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-2 pt-2">
-                <button
-                  onClick={() => window.print()}
-                  className="px-4 py-2 rounded-xl bg-white border border-[#D5D1C4] hover:bg-[#E3E0D7] font-bold text-xs flex items-center space-x-1.5 text-[#18243A]"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>Print Voucher</span>
-                </button>
-                <button
-                  onClick={() => setShowPaymentVoucher(false)}
-                  className="px-5 py-2 rounded-xl bg-[#121B2B] text-[#E7B84B] font-bold text-xs shadow-xs"
-                >
-                  <span>Close Receipt</span>
-                </button>
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-[11px] text-[#68727D]">
+                  {party2Signed ? 'Both accounts verified. Voucher ready.' : 'Click "Sign as Party 2" above to complete dual authorization.'}
+                </span>
+
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => window.print()}
+                    className="px-4 py-2 rounded-xl bg-white border border-[#D5D1C4] hover:bg-[#E3E0D7] font-bold text-xs flex items-center space-x-1.5 text-[#18243A]"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    <span>Print Voucher</span>
+                  </button>
+                  <button
+                    onClick={() => setShowPaymentVoucher(false)}
+                    className="px-5 py-2 rounded-xl bg-[#121B2B] text-[#E7B84B] font-bold text-xs shadow-xs"
+                  >
+                    <span>Close</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
