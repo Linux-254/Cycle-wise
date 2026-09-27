@@ -23,8 +23,9 @@ import {
   Printer,
   UserCheck,
   Store,
-  Key,
-  CheckSquare
+  Smartphone,
+  Lock,
+  PhoneCall
 } from 'lucide-react';
 
 interface UnifiedSmartChatProps {
@@ -64,11 +65,20 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
-  // Dual-Account Payment Settlement States
+  // Dual-Account Settlement & M-Pesa Sandbox States
   const [showPaymentVoucher, setShowPaymentVoucher] = useState(false);
   const [party1Signed, setParty1Signed] = useState(true);
   const [party2Signed, setParty2Signed] = useState(false);
   const [party2Name, setParty2Name] = useState('GreenPack KE (Packaging Supplier)');
+  const [party1Phone, setParty1Phone] = useState('0722123456');
+  const [party2Phone, setParty2Phone] = useState('0733987654');
+
+  // M-Pesa Interactive STK Push Modal
+  const [activeStkTarget, setActiveStkTarget] = useState<'party1' | 'party2' | null>(null);
+  const [mpesaPinInput, setMpesaPinInput] = useState('');
+  const [mpesaRef1, setMpesaRef1] = useState('QJK8912301A');
+  const [mpesaRef2, setMpesaRef2] = useState('QJK8912402B');
+  const [showMpesaAlert, setShowMpesaAlert] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialCycles.length > 0 && !selectedCycle) {
@@ -177,7 +187,6 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
 
   const handleOpenSettlementModal = () => {
     if (selectedCycle) {
-      // Determine secondary party name
       if (selectedCycle.edges.length > 1) {
         const edge2 = selectedCycle.edges[1];
         setParty2Name(smesMap.get(edge2.from_sme_id)?.name || 'GreenPack KE');
@@ -188,11 +197,27 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
     }
   };
 
-  const handleCompleteDualSettlement = () => {
-    if (selectedCycle) {
+  const handleTriggerMpesaStk = (target: 'party1' | 'party2') => {
+    setActiveStkTarget(target);
+    setMpesaPinInput('');
+  };
+
+  const handleConfirmMpesaPin = () => {
+    if (activeStkTarget === 'party1') {
+      setParty1Signed(true);
+      const ref = 'QJK' + Math.floor(100000 + Math.random() * 900000) + '01A';
+      setMpesaRef1(ref);
+      setShowMpesaAlert(`M-Pesa Confirmed: KES 0.00 Non-Monetary Trade Escrow Locked for ${businessName}. Ref #${ref}`);
+    } else if (activeStkTarget === 'party2') {
       setParty2Signed(true);
-      onCommitCycle(selectedCycle.id);
+      const ref = 'QJK' + Math.floor(100000 + Math.random() * 900000) + '02B';
+      setMpesaRef2(ref);
+      setShowMpesaAlert(`M-Pesa Confirmed: Reciprocal Delivery Authorized for ${party2Name}. Ref #${ref}`);
+      if (selectedCycle) {
+        onCommitCycle(selectedCycle.id);
+      }
     }
+    setActiveStkTarget(null);
   };
 
   const getSmeName = (id: string) => smesMap.get(id)?.name || id;
@@ -459,9 +484,9 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
             {/* 4. Minimalist Settlement Action & Dual Account Demo */}
             <div className="p-4 rounded-xl bg-[#EAF5F0] border border-[#2E8B68]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="font-bold text-xs text-[#2E8B68] block">Ready for Dual-Account Barter Settlement</span>
+                <span className="font-bold text-xs text-[#2E8B68] block">Ready for M-Pesa Dual-Account Settlement</span>
                 <p className="text-xs text-[#17202A] mt-0.5">
-                  Simultaneous bilateral authorization &bull; KES 0.00 cash debt created
+                  Bilateral M-Pesa Express authorization &bull; KES 0.00 cash debt created
                 </p>
               </div>
 
@@ -469,8 +494,8 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                 onClick={handleOpenSettlementModal}
                 className="px-5 py-2.5 rounded-xl bg-[#2E8B68] hover:bg-[#257356] text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all shadow-xs"
               >
-                <Check className="w-4 h-4" />
-                <span>Demo Dual-Account Settlement</span>
+                <Smartphone className="w-4 h-4 text-[#85E2BD]" />
+                <span>Simulate M-Pesa Dual Settlement</span>
               </button>
             </div>
           </div>
@@ -486,8 +511,8 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
               <div className="flex items-center space-x-2.5">
                 <FileText className="w-5 h-5 text-[#E7B84B]" />
                 <div>
-                  <h3 className="font-bold text-base text-white">Dual-Account Barter Settlement & Voucher</h3>
-                  <p className="text-xs text-[#8E9CAE]">Bilateral Escrow Release & Commercial Voucher</p>
+                  <h3 className="font-bold text-base text-white">M-Pesa Dual-Account Barter Settlement & Voucher</h3>
+                  <p className="text-xs text-[#8E9CAE]">Bilateral M-Pesa Authorization & Commercial Tax Voucher</p>
                 </div>
               </div>
               <button
@@ -498,23 +523,47 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
               </button>
             </div>
 
+            {/* Notification alert banner */}
+            {showMpesaAlert && (
+              <div className="p-3 bg-[#EAF5F0] border-b border-[#2E8B68]/40 text-xs font-semibold text-[#2E8B68] flex items-center justify-between">
+                <span className="flex items-center space-x-1.5">
+                  <Smartphone className="w-4 h-4" />
+                  <span>{showMpesaAlert}</span>
+                </span>
+                <button onClick={() => setShowMpesaAlert(null)} className="text-[#68727D] hover:text-black">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
             {/* Dual Account Sign-Off Demo Bar */}
             <div className="p-4 bg-[#EFECE4] border-b border-[#E3E0D7] space-y-2">
               <span className="text-xs font-bold text-[#18243A] block">
-                Dual-Account Authorization Status (Both Shops Must Authorize):
+                Dual M-Pesa Account Authorization Status (Both Shops Must Authorize):
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 {/* Party 1 Account */}
-                <div className="p-3 rounded-xl bg-white border border-[#E3E0D7] space-y-1">
+                <div className={`p-3 rounded-xl border space-y-1 ${party1Signed ? 'bg-white border-[#2E8B68]' : 'bg-[#FFF7ED] border-[#FDBA74]'}`}>
                   <div className="flex items-center justify-between font-bold text-[#18243A]">
                     <span>Party 1: {businessName}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EAF5F0] text-[#2E8B68]">
-                      <Check className="w-3 h-3 inline mr-1" />
-                      Party 1 Signed
-                    </span>
+                    {party1Signed ? (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EAF5F0] text-[#2E8B68] font-bold">
+                        <Check className="w-3 h-3 inline mr-1" />
+                        M-Pesa Verified
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleTriggerMpesaStk('party1')}
+                        className="text-[11px] px-2.5 py-1 rounded-lg bg-[#2E8B68] text-white font-bold hover:bg-[#257356]"
+                      >
+                        Send M-Pesa STK
+                      </button>
+                    )}
                   </div>
-                  <span className="text-[10px] text-[#68727D] block">PIN Auth: ****845 &bull; Eastleigh Node</span>
+                  <span className="text-[10px] text-[#68727D] block">
+                    Mobile: {party1Phone} &bull; Ref: {mpesaRef1}
+                  </span>
                 </div>
 
                 {/* Party 2 Account (Interactive Simulator) */}
@@ -522,21 +571,21 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                   <div className="flex items-center justify-between font-bold text-[#18243A]">
                     <span>Party 2: {party2Name}</span>
                     {party2Signed ? (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EAF5F0] text-[#2E8B68]">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EAF5F0] text-[#2E8B68] font-bold">
                         <Check className="w-3 h-3 inline mr-1" />
-                        Party 2 Signed
+                        M-Pesa Verified
                       </span>
                     ) : (
                       <button
-                        onClick={handleCompleteDualSettlement}
+                        onClick={() => handleTriggerMpesaStk('party2')}
                         className="text-[11px] px-2.5 py-1 rounded-lg bg-[#2E8B68] text-white font-bold hover:bg-[#257356] transition-colors shadow-2xs"
                       >
-                        Sign as Party 2
+                        Send M-Pesa STK (Party 2)
                       </button>
                     )}
                   </div>
                   <span className="text-[10px] text-[#68727D] block">
-                    {party2Signed ? 'PIN Auth: ****102 • Verified Dispatch' : 'Awaiting Party 2 Digital Approval'}
+                    Mobile: {party2Phone} &bull; Ref: {party2Signed ? mpesaRef2 : 'Awaiting Party 2 PIN'}
                   </span>
                 </div>
               </div>
@@ -550,8 +599,8 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                     <span className="font-bold text-sm text-[#18243A] block">Nairobi Barter Clearing Voucher</span>
                     <span className="text-[#68727D] text-[11px]">Voucher ID: #CW-2026-0927-SETTLED</span>
                   </div>
-                  <span className={`px-3 py-1 rounded-full font-bold text-xs ${party2Signed ? 'bg-[#EAF5F0] text-[#2E8B68]' : 'bg-[#FFF7ED] text-[#D8783D]'}`}>
-                    {party2Signed ? '100% SETTLED & ESCROW RELEASED' : 'PENDING DUAL AUTHORIZATION'}
+                  <span className={`px-3 py-1 rounded-full font-bold text-xs ${party1Signed && party2Signed ? 'bg-[#EAF5F0] text-[#2E8B68]' : 'bg-[#FFF7ED] text-[#D8783D]'}`}>
+                    {party1Signed && party2Signed ? '100% SETTLED & M-PESA VERIFIED' : 'PENDING DUAL AUTHORIZATION'}
                   </span>
                 </div>
 
@@ -578,15 +627,21 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                   ))}
                 </div>
 
-                <div className="pt-2 border-t border-[#EFECE4] flex items-center justify-between text-[10px] text-[#68727D]">
-                  <span>SHA-256 Dual Seal: <code>a8f94c2e71d... &bull; 7d291b8a...</code></span>
-                  <span>Compliance: KRA Non-Monetary Trade Section 12</span>
+                <div className="pt-2 border-t border-[#EFECE4] space-y-1 text-[10px] text-[#68727D]">
+                  <div className="flex justify-between">
+                    <span>M-Pesa Ref Party 1: <code>{mpesaRef1}</code></span>
+                    <span>M-Pesa Ref Party 2: <code>{mpesaRef2}</code></span>
+                  </div>
+                  <div className="flex justify-between border-t border-[#EFECE4] pt-1">
+                    <span>Daraja Consumer Key: <code>XyZVM1CONOmK...</code></span>
+                    <span>Compliance: KRA Section 12 Barter Rule</span>
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between pt-1">
                 <span className="text-[11px] text-[#68727D]">
-                  {party2Signed ? 'Both accounts verified. Voucher ready.' : 'Click "Sign as Party 2" above to complete dual authorization.'}
+                  {party1Signed && party2Signed ? 'Both M-Pesa accounts verified. Voucher ready.' : 'Click "Send M-Pesa STK" above to simulate mobile PIN entry.'}
                 </span>
 
                 <div className="flex space-x-2">
@@ -605,6 +660,77 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive M-Pesa Express STK Push Phone Screen Overlay */}
+      {activeStkTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/70 backdrop-blur-xs">
+          <div className="bg-[#121B2B] border-2 border-[#2E8B68] rounded-3xl w-full max-w-sm shadow-2xl p-5 text-white space-y-4 animate-in zoom-in-95 duration-150">
+            <div className="text-center space-y-1 border-b border-[#202E44] pb-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#2E8B68] text-white mx-auto flex items-center justify-center font-bold text-lg shadow-md">
+                M
+              </div>
+              <h4 className="font-bold text-base text-white">M-PESA Express Authorization</h4>
+              <p className="text-[11px] text-[#85E2BD]">Safaricom Daraja Sandbox &bull; KES 0.00 Non-Monetary Trade</p>
+            </div>
+
+            <div className="bg-[#1C2B42] p-3.5 rounded-2xl border border-[#2E4363] text-xs space-y-2">
+              <div className="flex justify-between text-[#8E9CAE] text-[11px]">
+                <span>Recipient Node:</span>
+                <span className="font-bold text-white">
+                  {activeStkTarget === 'party1' ? businessName : party2Name}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-[#8E9CAE] text-[11px]">
+                <span>Mobile Number:</span>
+                <span className="font-bold text-white">
+                  {activeStkTarget === 'party1' ? party1Phone : party2Phone}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-[#8E9CAE] text-[11px]">
+                <span>Action:</span>
+                <span className="font-bold text-[#85E2BD]">Bilateral Escrow Lock</span>
+              </div>
+
+              <div className="flex justify-between text-[#8E9CAE] text-[11px] border-t border-[#2A3E5C] pt-1">
+                <span>Total Cash Fee:</span>
+                <span className="font-bold text-[#E7B84B] text-sm">KES 0.00</span>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs text-[#8E9CAE] block text-center">
+                Enter M-PESA PIN on phone to authorize:
+              </label>
+              <input
+                type="password"
+                maxLength={4}
+                autoFocus
+                placeholder="• • • •"
+                value={mpesaPinInput}
+                onChange={(e) => setMpesaPinInput(e.target.value)}
+                className="w-full text-center tracking-[0.5em] text-lg font-bold py-2 rounded-xl bg-white text-[#121B2B] outline-hidden focus:ring-2 focus:ring-[#85E2BD]"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                onClick={() => setActiveStkTarget(null)}
+                className="py-2.5 rounded-xl bg-[#1C2B42] hover:bg-[#283C5A] text-[#8E9CAE] font-bold text-xs border border-[#2E4363]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmMpesaPin}
+                className="py-2.5 rounded-xl bg-[#2E8B68] hover:bg-[#257356] text-white font-bold text-xs shadow-md"
+              >
+                Authorize PIN
+              </button>
             </div>
           </div>
         </div>

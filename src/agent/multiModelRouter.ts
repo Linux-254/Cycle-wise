@@ -24,7 +24,7 @@ export interface ModelExecutionResponse {
 export class MultiModelRouter {
   private geminiClient: GoogleGenAI | null = null;
   private nvidiaApiKey: string | null = null;
-  private nvidiaBaseUrl: string = 'https://integrate.api.nvidia.com/v1';
+  private nvidiaBaseUrl: string = 'https://openrouter.ai/api/v1';
   private nvidiaModel: string = 'nvidia/nemotron-3-super-120b';
 
   // Failsafe Gemini models in priority order
