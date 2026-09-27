@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, PlusCircle, GitMerge, Clock, UserCheck, RefreshCw, Store, HelpCircle, Sparkles } from 'lucide-react';
+import { CyclewiseLogo } from './CyclewiseLogo';
 
 interface SidebarProps {
   currentTab: string;
@@ -22,27 +23,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-[#121B2B] text-white shrink-0 border-r border-[#202E44] min-h-screen select-none">
+    <aside className="hidden md:flex flex-col w-64 bg-[#0B132B] text-white shrink-0 border-r border-[#1C2B4E] min-h-screen select-none shadow-xl">
       {/* Brand Header */}
-      <div className="p-4 sm:p-5 border-b border-[#202E44]">
+      <div className="p-4 sm:p-5 border-b border-[#1C2B4E]">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E7B84B] to-[#C9972E] p-0.5 shadow-md flex items-center justify-center shrink-0">
-            <div className="w-full h-full bg-[#121B2B] rounded-[10px] flex items-center justify-center">
-              <svg className="w-5 h-5 text-[#E7B84B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                <path d="M3 3v5h5" />
-                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                <path d="M21 21v-5h-5" />
-              </svg>
-            </div>
+          <div className="w-10 h-10 rounded-2xl bg-[#132247] border border-[#233A6B] p-1.5 shadow-md flex items-center justify-center shrink-0">
+            <CyclewiseLogo size={28} variant="gold" />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between">
-              <h1 className="font-bold text-base tracking-tight text-white leading-tight">Cyclewise</h1>
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-[#2E8B68]/20 text-[#85E2BD] border border-[#2E8B68]/40">
+              <h1 className="font-extrabold text-base tracking-tight text-white leading-tight">Cyclewise</h1>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-[#10B981]/20 text-[#34D399] border border-[#10B981]/30">
                 Live
               </span>
             </div>
+            <span className="text-[10px] text-[#9CA3AF] block font-medium">SME Barter House</span>
           </div>
         </div>
       </div>
@@ -52,17 +47,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {onOpenGuide && (
           <button
             onClick={onOpenGuide}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-[#162234] hover:bg-[#1E2E46] text-[#85E2BD] border border-[#233852] transition-all mb-2 text-left focus-visible:outline-hidden"
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold bg-[#132247] hover:bg-[#1C3260] text-[#34D399] border border-[#233A6B] transition-all mb-2 text-left shadow-xs"
           >
             <div className="flex items-center space-x-2">
-              <HelpCircle className="w-4 h-4 text-[#2E8B68]" />
+              <HelpCircle className="w-4 h-4 text-[#10B981]" />
               <span>How It Works (Guide)</span>
             </div>
-            <span className="text-[9px] text-[#8E9CAE]">5 Steps</span>
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#0B132B] text-[#9CA3AF]">5 Steps</span>
           </button>
         )}
 
-        <div className="px-2 pt-2 text-[10px] font-bold uppercase tracking-wider text-[#687B95]">
+        <div className="px-2 pt-2 text-[10px] font-extrabold uppercase tracking-wider text-[#6B7280]">
           Navigation
         </div>
 
@@ -76,17 +71,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   key={link.id}
                   onClick={() => onSelectTab(link.id)}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left focus-visible:outline-hidden shadow-xs ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition-all text-left shadow-md ${
                     isActive
-                      ? 'bg-[#E7B84B] text-[#121B2B] shadow-md'
-                      : 'bg-[#E7B84B]/90 text-[#121B2B] hover:bg-[#E7B84B]'
+                      ? 'bg-gradient-to-r from-[#F59E0B] via-[#E7B84B] to-[#D97706] text-[#0B132B]'
+                      : 'bg-[#F59E0B]/90 text-[#0B132B] hover:bg-[#F59E0B]'
                   }`}
                 >
                   <div className="flex items-center space-x-2.5">
                     <Icon className="w-4 h-4 stroke-[2.5]" />
                     <span>{link.label}</span>
                   </div>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-[#121B2B]/10 text-[#121B2B]">
+                  <span className="text-[10px] px-1.5 py-0.2 rounded font-extrabold bg-[#0B132B]/15 text-[#0B132B]">
                     Core
                   </span>
                 </button>
@@ -97,18 +92,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={link.id}
                 onClick={() => onSelectTab(link.id)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-left focus-visible:outline-hidden ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all text-left ${
                   isActive
-                    ? 'bg-[#1F2F47] text-white font-semibold border border-[#2E4363] shadow-xs'
-                    : 'text-[#A0AEC0] hover:bg-[#18253A] hover:text-white'
+                    ? 'bg-[#132247] text-[#F59E0B] border border-[#233A6B]'
+                    : 'text-[#9CA3AF] hover:bg-[#132247]/50 hover:text-white'
                 }`}
               >
                 <div className="flex items-center space-x-2.5">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-[#E7B84B]' : 'text-[#8E9CAE]'}`} />
+                  <Icon className="w-4 h-4" />
                   <span>{link.label}</span>
                 </div>
                 {link.badge && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-md font-mono bg-[#18253A] text-[#8E9CAE]">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-[#10B981]/20 text-[#34D399]">
                     {link.badge}
                   </span>
                 )}
@@ -118,14 +113,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </nav>
 
-      {/* Footer Reset */}
-      <div className="p-3.5 border-t border-[#202E44] bg-[#0E1522]">
+      {/* Footer controls */}
+      <div className="p-3.5 border-t border-[#1C2B4E] space-y-2 text-xs">
         <button
           onClick={onResetDemo}
-          className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-xl bg-[#1C2B42] hover:bg-[#263A58] text-xs font-medium text-slate-300 hover:text-white transition-all border border-[#2A3F60]"
+          className="w-full flex items-center justify-center space-x-1.5 px-3 py-2 rounded-2xl text-[#9CA3AF] hover:text-white hover:bg-[#132247] transition-all font-semibold"
         >
-          <RefreshCw className="w-3.5 h-3.5 text-[#E7B84B]" />
-          <span>Reset Sample Data</span>
+          <RefreshCw className="w-3.5 h-3.5" />
+          <span>Reset Demo Network</span>
         </button>
       </div>
     </aside>
