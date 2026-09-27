@@ -175,13 +175,13 @@ export const AgentCommandCenterModal: React.FC<AgentCommandCenterModalProps> = (
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="font-bold text-base text-white">Cyclewise Smart Trade Assistant</h3>
+                <h3 className="font-bold text-base text-white">Cyclewise AI Studio</h3>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#2E8B68] text-white font-bold">
                   Active Helper
                 </span>
               </div>
               <p className="text-xs text-[#8E9CAE]">
-                Understands English, Swahili & Sheng &bull; Finds 3-4 shop barter loops &bull; KES 0.00 cash debt
+                Language interpretation + deterministic graph matching &bull; Human approval required
               </p>
             </div>
           </div>
@@ -263,7 +263,7 @@ export const AgentCommandCenterModal: React.FC<AgentCommandCenterModalProps> = (
                 <div>
                   <span className="font-bold text-[#2E8B68] block">How this works for your business:</span>
                   <p className="text-[#17202A] mt-0.5 leading-relaxed">
-                    Type what surplus stock or service you have, and what supplies you need urgently. The assistant finds 3 or 4 shops in Nairobi where everyone's surplus fulfills another's need with <strong>zero cash loans</strong>.
+                    Type what surplus stock or service you have, and what supplies you need urgently. The assistant structures the request, validates it, then asks the deterministic graph engine for a feasible loop. No proposal activates without human approval.
                   </p>
                 </div>
               </div>
@@ -312,7 +312,7 @@ export const AgentCommandCenterModal: React.FC<AgentCommandCenterModalProps> = (
               {/* Action Bar */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                 <div className="text-[11px] text-[#68727D]">
-                  Powered by <strong>NVIDIA Nemotron & Google Gemini</strong> &bull; 100% Free of Cash Loans
+                  Provider status is deployment-dependent &bull; local deterministic fallback always available
                 </div>
                 <button
                   onClick={handleRunAgent}

@@ -8,6 +8,8 @@ import { AiFeaturesMatrixModal } from './components/AiFeaturesMatrixModal';
 import { SmeOnboardingModal } from './components/SmeOnboardingModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { BarterCartModal, CartItem } from './components/BarterCartModal';
+import { AgentCommandCenterModal } from './components/AgentCommandCenterModal';
+import { AgentInquiryModal } from './components/AgentInquiryModal';
 import { HeroLandingBanner } from './components/HeroLandingBanner';
 import { CyclewiseLogo } from './components/CyclewiseLogo';
 import { DeterministicGraphEngine } from './engine/graphEngine';
@@ -35,6 +37,8 @@ export default function App() {
   const [showAiFeaturesModal, setShowAiFeaturesModal] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
+  const [showAgentCommand, setShowAgentCommand] = useState(false);
+  const [showAgentInquiry, setShowAgentInquiry] = useState(false);
   const [selectedAreaFilter, setSelectedAreaFilter] = useState<string>('all');
 
   // Barter Cart State
@@ -67,6 +71,7 @@ export default function App() {
   }, [smes]);
 
   const [cycles, setCycles] = useState<ExchangeCycle[]>([]);
+  const activeCycle = cycles[0] || null;
 
   // Filtered SMEs by area
   const filteredSmes = useMemo(() => {
@@ -151,7 +156,7 @@ export default function App() {
       {/* Main Container */}
       <div className="cw-stage flex-1 flex flex-col min-w-0 pb-20 md:pb-8">
         {/* Streamlined Premium Top Navigation Bar */}
-        <header className="bg-[#0B132B]/95 text-white px-4 sm:px-6 py-3.5 border-b border-[#1C2B4E] sticky top-0 z-30 shadow-md backdrop-blur-md">
+        <header className="cw-topbar bg-[#0B132B]/95 text-white px-4 sm:px-6 py-3.5 border-b border-[#1C2B4E] sticky top-0 z-30 shadow-md backdrop-blur-md">
           <div className="max-w-4xl mx-auto flex items-center justify-between gap-3 text-xs">
             <div className="flex items-center space-x-3">
               <div className="w-9 h-9 rounded-2xl bg-[#132247] border border-[#233A6B] p-1 flex items-center justify-center shadow-md">
@@ -203,12 +208,19 @@ export default function App() {
                 <Bot className="w-3.5 h-3.5 text-[#10B981]" />
                 <span>AI Features</span>
               </button>
+              <button
+                onClick={() => setShowAgentCommand(true)}
+                className="hidden lg:flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#D8A84E] hover:bg-[#EED8A6] text-[#0B132B] font-extrabold text-xs transition-all"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Open AI Studio</span>
+              </button>
             </div>
           </div>
         </header>
 
         {/* Minimal Nav Tabs for Desktop / Tablet */}
-        <div className="hidden md:block bg-white/90 backdrop-blur-md border-b border-[#E2DDD3] px-4 py-2.5 sticky top-[57px] z-20 shadow-xs">
+        <div className="cw-tabbar hidden md:block bg-white/90 backdrop-blur-md border-b border-[#E2DDD3] px-4 py-2.5 sticky top-[57px] z-20 shadow-xs">
           <div className="max-w-4xl mx-auto flex items-center space-x-2 text-xs font-semibold">
             {[
               { id: 'chat', label: 'Smart Assistant & Swap Matcher' },
@@ -231,7 +243,7 @@ export default function App() {
         </div>
 
         {/* Main Content Area */}
-        <main className="max-w-5xl w-full mx-auto px-4 pt-5 sm:px-6 sm:pt-8 flex-1 pb-20 md:pb-8 space-y-8">
+        <main className="cw-content max-w-5xl w-full mx-auto px-4 pt-5 sm:px-6 sm:pt-8 flex-1 pb-20 md:pb-8 space-y-8">
           {/* Beautiful Hero Landing Banner */}
           <HeroLandingBanner
             onStartMatching={() => setCurrentTab('chat')}
@@ -374,8 +386,30 @@ export default function App() {
       <AiFeaturesMatrixModal
         isOpen={showAiFeaturesModal}
         onClose={() => setShowAiFeaturesModal(false)}
-        onOpenCommandCenter={() => setCurrentTab('chat')}
-        onOpenQna={() => setCurrentTab('chat')}
+        onOpenCommandCenter={() => {
+          setShowAiFeaturesModal(false);
+          setShowAgentCommand(true);
+        }}
+        onOpenQna={() => {
+          setShowAiFeaturesModal(false);
+          setShowAgentInquiry(true);
+        }}
+      />
+
+      <AgentCommandCenterModal
+        isOpen={showAgentCommand}
+        onClose={() => setShowAgentCommand(false)}
+        smes={smesMap}
+        activeCycle={activeCycle}
+        onCycleUpdate={(updatedCycles) => setCycles(updatedCycles)}
+      />
+
+      <AgentInquiryModal
+        isOpen={showAgentInquiry}
+        onClose={() => setShowAgentInquiry(false)}
+        cycle={activeCycle}
+        smes={smesMap}
+        onRunSubstitute={() => setShowAgentCommand(true)}
       />
 
       <SmeOnboardingModal

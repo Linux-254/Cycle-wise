@@ -513,9 +513,9 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
             {/* 4. Minimalist Settlement Action & Dual Account Demo */}
             <div className="p-4 rounded-xl bg-[#EAF5F0] border border-[#2E8B68]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="font-bold text-xs text-[#2E8B68] block">Ready for M-Pesa Dual-Account Settlement</span>
+                <span className="font-bold text-xs text-[#2E8B68] block">Ready for demo authorization</span>
                 <p className="text-xs text-[#17202A] mt-0.5">
-                  Bilateral M-Pesa Express authorization &bull; KES 0.00 cash debt created
+                  Bilateral PIN sign-off simulation &bull; no payment or escrow API is connected
                 </p>
               </div>
 
@@ -524,7 +524,7 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                 className="px-5 py-2.5 rounded-xl bg-[#2E8B68] hover:bg-[#257356] text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all shadow-xs"
               >
                 <Smartphone className="w-4 h-4 text-[#85E2BD]" />
-                <span>Simulate M-Pesa Dual Settlement</span>
+                <span>Open authorization demo</span>
               </button>
             </div>
           </div>
@@ -540,8 +540,8 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
               <div className="flex items-center space-x-2.5">
                 <FileText className="w-5 h-5 text-[#E7B84B]" />
                 <div>
-                  <h3 className="font-bold text-base text-white">M-Pesa Dual-Account Barter Settlement & Voucher</h3>
-                  <p className="text-xs text-[#8E9CAE]">Bilateral M-Pesa Authorization & Commercial Tax Voucher</p>
+                  <h3 className="font-bold text-base text-white">Demo authorization & barter voucher</h3>
+                  <p className="text-xs text-[#8E9CAE]">PIN sign-off simulation; no live payment is performed</p>
                 </div>
               </div>
               <button
@@ -568,7 +568,7 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
             {/* Dual Account Sign-Off Demo Bar */}
             <div className="p-4 bg-[#EFECE4] border-b border-[#E3E0D7] space-y-2">
               <span className="text-xs font-bold text-[#18243A] block">
-                Dual M-Pesa Account Authorization Status (Both Shops Must Authorize):
+                Demo authorization status (Both shops must review):
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -579,14 +579,14 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                     {party1Signed ? (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EAF5F0] text-[#2E8B68] font-bold">
                         <Check className="w-3 h-3 inline mr-1" />
-                        M-Pesa Verified
+                        Demo PIN accepted
                       </span>
                     ) : (
                       <button
                         onClick={() => handleTriggerMpesaStk('party1')}
                         className="text-[11px] px-2.5 py-1 rounded-lg bg-[#2E8B68] text-white font-bold hover:bg-[#257356]"
                       >
-                        Send M-Pesa STK
+                        Simulate PIN sign-off
                       </button>
                     )}
                   </div>
@@ -602,14 +602,14 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                     {party2Signed ? (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EAF5F0] text-[#2E8B68] font-bold">
                         <Check className="w-3 h-3 inline mr-1" />
-                        M-Pesa Verified
+                        Demo PIN accepted
                       </span>
                     ) : (
                       <button
                         onClick={() => handleTriggerMpesaStk('party2')}
                         className="text-[11px] px-2.5 py-1 rounded-lg bg-[#2E8B68] text-white font-bold hover:bg-[#257356] transition-colors shadow-2xs"
                       >
-                        Send M-Pesa STK (Party 2)
+                        Simulate PIN sign-off (Party 2)
                       </button>
                     )}
                   </div>
@@ -629,7 +629,7 @@ export const UnifiedSmartChat: React.FC<UnifiedSmartChatProps> = ({
                     <span className="text-[#68727D] text-[11px]">Voucher ID: #CW-2026-0927-SETTLED</span>
                   </div>
                   <span className={`px-3 py-1 rounded-full font-bold text-xs ${party1Signed && party2Signed ? 'bg-[#EAF5F0] text-[#2E8B68]' : 'bg-[#FFF7ED] text-[#D8783D]'}`}>
-                    {party1Signed && party2Signed ? '100% SETTLED & M-PESA VERIFIED' : 'PENDING DUAL AUTHORIZATION'}
+                    {party1Signed && party2Signed ? 'DEMO AUTHORIZATION COMPLETE' : 'PENDING DUAL AUTHORIZATION'}
                   </span>
                 </div>
 

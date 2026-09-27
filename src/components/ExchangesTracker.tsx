@@ -72,7 +72,7 @@ export const ExchangesTracker: React.FC<ExchangesTrackerProps> = ({
         }))
       : [],
     compliance_declaration: 'Kenyan SME Multilateral Reciprocal Exchange Agreement (Zero-Debt Barter Clearing under Cap 486)',
-    authorized_agent: 'Google Gemini 3.8 Flash Agent (Cyclewise Engine v1.0.0)',
+    authorized_agent: 'Cyclewise deterministic graph + human approval gate',
   };
 
   // Synthesize Immutable Audit Trail

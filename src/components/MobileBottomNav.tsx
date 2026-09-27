@@ -23,7 +23,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   cartCount,
 }) => {
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#121B2B] text-white border-t border-[#202E44] z-40 px-2 py-1.5 shadow-2xl backdrop-blur-md bg-opacity-95">
+    <div className="cw-mobile-nav md:hidden fixed bottom-0 left-0 right-0 bg-[#121B2B] text-white border-t border-[#202E44] z-40 px-2 py-1.5 shadow-2xl backdrop-blur-md bg-opacity-95">
       <div className="flex items-center justify-around max-w-md mx-auto">
         {/* Tab 1: Trade Matcher */}
         <button

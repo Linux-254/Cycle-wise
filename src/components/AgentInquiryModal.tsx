@@ -51,10 +51,10 @@ export const AgentInquiryModal: React.FC<AgentInquiryModalProps> = ({
   }>>([
     {
       sender: 'agent',
-      text: cycle
-        ? `Jambo! I am the Cyclewise Smart Assistant. I have verified facts for this ${cycle.cycle_length}-shop barter loop (KES ${cycle.estimated_value_unlocked.toLocaleString()} unlocked with 0 debt). Ask me anything in Swahili, Sheng, or English—you can also tap the mic to speak!`
+        text: cycle
+        ? `Jambo! I am the Cyclewise Smart Assistant. I can explain the returned facts for this ${cycle.cycle_length}-shop proposed loop (KES ${cycle.estimated_value_unlocked.toLocaleString()} estimated exchange value). Ask me anything in Swahili, Sheng, or English—you can also tap the mic to speak!`
         : 'Jambo! I am the Cyclewise Smart Assistant. Ask me any question about how Nairobi shops trade surplus supplies, how delivery works, or why this prevents debt.',
-      citations: ['Cyclewise Verified Graph Engine', 'National Registry Verification'],
+      citations: ['Cyclewise deterministic graph', 'Participant evidence ledger'],
     },
   ]);
 
@@ -176,7 +176,7 @@ export const AgentInquiryModal: React.FC<AgentInquiryModalProps> = ({
                 </span>
               </div>
               <p className="text-xs text-[#8E9CAE]">
-                Speaks English, Swahili & Sheng &bull; Fact-checked answers on trade loops and escrow
+                Speaks English, Swahili & Sheng &bull; Grounded answers on proposed trade loops
               </p>
             </div>
           </div>
@@ -275,7 +275,7 @@ export const AgentInquiryModal: React.FC<AgentInquiryModalProps> = ({
           </div>
 
           <div className="flex items-center justify-between text-[11px] text-[#68727D]">
-            <span>Model Engine: <strong>NVIDIA Nemotron ➔ Google Gemini Failsafe</strong></span>
+            <span>Model path: <strong>Configured provider ➔ local deterministic fallback</strong></span>
             {isRecording && (
               <span className="text-[#DC2626] font-bold flex items-center gap-1 animate-pulse">
                 <span className="w-2 h-2 rounded-full bg-[#DC2626]"></span>

@@ -23,7 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-[#0B132B] text-white shrink-0 border-r border-[#1C2B4E] min-h-screen select-none shadow-xl">
+    <aside className="cw-sidebar hidden md:flex flex-col w-64 bg-[#0B132B] text-white shrink-0 border-r border-[#1C2B4E] min-h-screen select-none shadow-xl">
       {/* Brand Header */}
       <div className="p-4 sm:p-5 border-b border-[#1C2B4E]">
         <div className="flex items-center space-x-3">
